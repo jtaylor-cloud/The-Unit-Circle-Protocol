@@ -1,0 +1,4395 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Trig Learning Suite</title>
+<style>
+
+:root{--bg:#060610;--surface:#0d0d1e;--border:#1e1e3a;--ink:#e8e8ff;--muted:#555577;--dim:#2a2a4a;--green:#39ff14;--blue:#00cfff;--pink:#ff2d78;--yellow:#ffe600;}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{background:var(--bg);color:var(--ink);font-family:'Courier New',Courier,monospace;min-height:100vh;}
+body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
+  background-image:linear-gradient(rgba(0,207,255,.04) 1px,transparent 1px),linear-gradient(90deg,rgba(0,207,255,.04) 1px,transparent 1px);
+  background-size:36px 36px;}
+body::after{content:'';position:fixed;inset:0;z-index:1;pointer-events:none;
+  background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,.06) 2px,rgba(0,0,0,.06) 4px);}
+#screen-home,#screen-tool,#screen-report{position:relative;z-index:2;}
+#screen-home{display:block;}#screen-tool{display:none;}#screen-report{display:none;}
+
+.home-page{max-width:820px;margin:0 auto;padding:0 28px 80px;}
+.hero{padding:48px 0 36px;text-align:center;border-bottom:1px solid var(--border);margin-bottom:44px;}
+.hero-tag{display:inline-block;font-size:10px;letter-spacing:4px;text-transform:uppercase;color:var(--blue);border:1px solid rgba(0,207,255,.3);padding:3px 12px;margin-bottom:24px;}
+.hero-title{font-size:clamp(52px,9vw,92px);font-weight:900;line-height:.9;letter-spacing:-3px;margin-bottom:12px;}
+.t-g{color:var(--green);text-shadow:0 0 40px rgba(57,255,20,.45),0 0 80px rgba(57,255,20,.15);}
+.t-b{color:var(--blue);text-shadow:0 0 40px rgba(0,207,255,.45),0 0 80px rgba(0,207,255,.15);}
+.hero-sub{font-size:11px;letter-spacing:5px;color:var(--muted);text-transform:uppercase;margin-bottom:28px;}
+.hero-prompt{font-size:13.5px;color:var(--green);}.hero-prompt::before{content:'> ';color:var(--muted);}
+.cursor{display:inline-block;width:7px;height:12px;background:var(--green);vertical-align:middle;margin-left:2px;animation:cursorBlink 1s step-end infinite;}
+@keyframes cursorBlink{50%{opacity:0;}}
+.hero-divider{width:80%;margin:24px auto 0;height:1px;background:linear-gradient(90deg,transparent,var(--blue),transparent);}
+.step-head{display:flex;align-items:center;gap:10px;margin-bottom:16px;}
+.step-num{font-size:10px;letter-spacing:2px;color:var(--muted);border:1px solid var(--dim);padding:2px 7px;}
+.step-label{font-size:11px;letter-spacing:3px;text-transform:uppercase;color:var(--yellow);}
+.dossier{border:1px solid var(--border);background:var(--surface);margin-bottom:44px;position:relative;}
+.dossier::before{content:'';position:absolute;top:-1px;left:-1px;width:14px;height:14px;border:2px solid var(--blue);border-right:none;border-bottom:none;}
+.dossier::after{content:'';position:absolute;top:-1px;right:-1px;width:14px;height:14px;border:2px solid var(--blue);border-left:none;border-bottom:none;}
+.dossier-hdr{background:rgba(0,0,0,.3);border-bottom:1px solid var(--border);padding:7px 18px;font-size:10px;letter-spacing:3px;text-transform:uppercase;color:var(--yellow);display:flex;justify-content:space-between;}
+.dossier-hdr span{color:var(--muted);}
+.dossier-grid{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--border);}
+.d-field{background:var(--surface);padding:14px 18px;}
+.d-label{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--blue);margin-bottom:6px;display:block;}
+.d-label .req{color:var(--pink);}
+.d-input{width:100%;background:transparent;border:none;border-bottom:1px solid var(--dim);color:var(--ink);font-family:'Courier New',Courier,monospace;font-size:19px;padding:3px 0 5px;outline:none;transition:border-color .2s;}
+.d-input::placeholder{color:var(--dim);font-size:14.5px;}.d-input:focus{border-bottom-color:var(--blue);}.d-input.filled{border-bottom-color:var(--green);}
+.missions-wrap{margin-bottom:44px;}
+.sel-bar{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;}
+.sel-dots{display:flex;gap:5px;}
+.sel-dot{width:7px;height:7px;border-radius:50%;background:var(--dim);transition:background .2s,box-shadow .2s;}
+.sel-dot.lit{background:var(--green);box-shadow:0 0 6px var(--green);}
+.sel-count{font-size:11px;color:var(--muted);transition:color .2s;}.sel-count.has{color:var(--green);}
+.missions-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;}
+.m-card{border:1px solid var(--border);background:var(--surface);padding:16px 14px 13px;cursor:pointer;transition:all .15s;position:relative;user-select:none;}
+.m-card:hover{border-color:rgba(0,207,255,.5);background:rgba(0,207,255,.04);transform:translateY(-1px);}
+.m-card.selected{border-color:var(--green);background:rgba(57,255,20,.06);}
+.m-card.done-card{border-color:rgba(57,255,20,.35);background:rgba(57,255,20,.03);cursor:default;}
+.m-redo-btn{position:absolute;bottom:10px;right:10px;font-family:'Share Tech Mono',monospace;font-size:10px;padding:4px 8px;border:1.5px solid var(--blue);background:transparent;color:var(--blue);cursor:pointer;letter-spacing:.08em;opacity:0;pointer-events:none;transition:all .2s;border-radius:2px;}
+.m-card.done-card .m-redo-btn{opacity:1;pointer-events:auto;}
+.m-redo-btn:hover{background:rgba(0,207,255,.12);box-shadow:0 0 8px rgba(0,207,255,.3);}
+.m-check{position:absolute;top:8px;right:10px;color:var(--green);font-size:14.5px;opacity:0;transform:scale(0);transition:all .18s cubic-bezier(.34,1.56,.64,1);text-shadow:0 0 6px var(--green);}
+.m-done-tag{position:absolute;top:8px;right:10px;font-size:9px;letter-spacing:1px;color:var(--green);opacity:0;background:rgba(57,255,20,.1);padding:1px 5px;}
+.m-card.selected .m-check{opacity:1;transform:scale(1);}
+.m-card.done-card .m-done-tag{opacity:1;}
+.m-card.done-card .m-name{color:var(--muted);}
+.m-num{font-size:10px;letter-spacing:2px;color:var(--muted);margin-bottom:6px;}
+.m-name{font-size:13.5px;font-weight:bold;color:var(--blue);margin-bottom:5px;line-height:1.3;transition:color .15s;}
+.m-card.selected .m-name{color:var(--green);}
+.m-desc{font-size:11px;color:var(--muted);line-height:1.7;margin-bottom:8px;}
+.m-badge{font-size:9px;letter-spacing:2px;text-transform:uppercase;padding:2px 6px;border:1px solid;}
+.m-badge.scored{color:var(--yellow);border-color:rgba(255,230,0,.3);}
+.m-badge.explorer{color:var(--muted);border-color:var(--dim);}
+.actions-row{display:flex;flex-direction:column;align-items:center;gap:10px;margin-bottom:28px;}
+.btn-launch{background:transparent;border:2px solid var(--green);color:var(--green);font-family:'Courier New',Courier,monospace;font-size:13.5px;font-weight:bold;letter-spacing:4px;text-transform:uppercase;padding:14px 48px;cursor:pointer;position:relative;overflow:hidden;transition:color .2s;clip-path:polygon(8px 0%,100% 0%,calc(100% - 8px) 100%,0% 100%);}
+.btn-launch::before{content:'';position:absolute;inset:0;background:var(--green);transform:translateX(-101%);transition:transform .22s ease;z-index:0;}
+.btn-launch span{position:relative;z-index:1;}
+.btn-launch:not([disabled]):hover::before{transform:translateX(0);}
+.btn-launch:not([disabled]):hover{color:var(--bg);}
+.btn-launch[disabled]{opacity:.22;cursor:not-allowed;border-color:var(--muted);color:var(--muted);}
+.btn-report{background:transparent;border:2px solid var(--yellow);color:var(--yellow);font-family:'Courier New',Courier,monospace;font-size:12.5px;font-weight:bold;letter-spacing:3px;text-transform:uppercase;padding:11px 36px;cursor:pointer;transition:all .2s;clip-path:polygon(6px 0%,100% 0%,calc(100% - 6px) 100%,0% 100%);}
+.btn-report:hover{background:rgba(255,230,0,.1);}
+.btn-report[disabled]{opacity:.2;cursor:not-allowed;}
+.launch-status{font-size:11px;color:var(--muted);letter-spacing:1px;min-height:14px;}
+.launch-status.ready{color:var(--green);text-shadow:0 0 6px rgba(57,255,20,.3);}
+.launch-status.warn{color:var(--yellow);}
+.progress-strip{border:1px solid var(--border);background:var(--surface);padding:16px 20px;margin-top:24px;}
+.prog-title{font-size:10px;letter-spacing:3px;text-transform:uppercase;color:var(--muted);margin-bottom:12px;}
+.prog-item{display:flex;align-items:center;gap:10px;font-size:11px;margin-bottom:7px;}
+.prog-dot{width:8px;height:8px;border-radius:50%;background:var(--dim);flex-shrink:0;}
+.prog-dot.complete{background:var(--green);box-shadow:0 0 5px var(--green);}
+.prog-name{flex:1;color:var(--muted);}.prog-name.complete{color:var(--ink);}
+.prog-score{color:var(--green);font-size:11px;}
+.hud{position:fixed;z-index:10;font-size:10px;letter-spacing:2px;color:var(--muted);}
+.hud.tl{top:12px;left:16px;}.hud.tr{top:12px;right:16px;text-align:right;}
+.hud.bl{bottom:12px;left:16px;}.hud.br{bottom:12px;right:16px;}
+.blink{animation:blinkAnim 2s step-end infinite;}@keyframes blinkAnim{50%{opacity:0;}}
+.tool-topbar{display:flex;justify-content:space-between;align-items:center;padding:10px 20px;background:rgba(6,6,16,.97);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:500;}
+.ttb-left{display:flex;align-items:center;gap:14px;}.ttb-right{display:flex;align-items:center;gap:10px;flex-wrap:wrap;justify-content:flex-end;}
+.ttb-name{font-size:13.5px;font-weight:bold;color:var(--blue);letter-spacing:1px;}
+.back-btn-tool{font-family:'Courier New',Courier,monospace;font-size:11px;letter-spacing:2px;padding:6px 14px;border:1px solid var(--border);background:transparent;color:var(--muted);cursor:pointer;transition:all .15s;}
+.back-btn-tool:hover{color:var(--pink);border-color:var(--pink);}
+.type-pill{font-size:9px;letter-spacing:2px;padding:2px 8px;border:1px solid;}
+.scored-pill{color:var(--yellow);border-color:rgba(255,230,0,.4);}.exp-pill{color:var(--muted);border-color:var(--dim);}
+.live-score{font-size:11px;color:var(--green);text-shadow:0 0 6px var(--green);letter-spacing:1px;min-width:80px;text-align:right;}
+.done-btn{font-family:'Courier New',Courier,monospace;font-size:11px;font-weight:bold;letter-spacing:2px;padding:7px 16px;border:2px solid var(--green);background:transparent;color:var(--green);cursor:pointer;transition:all .15s;}
+.done-btn:hover{background:var(--green);color:var(--bg);}
+.tool-section{display:none;}.tool-section.active{display:block;}
+/* Unit Circle side-by-side layout */
+#uc-root { overflow:visible; }
+#uc-root header { display:none; }
+#uc-root canvas {
+  width: 420px;
+  height: 420px;
+  display: block;
+  cursor: crosshair;
+  border-radius: 12px;
+}
+#uc-root .info-panel {
+  flex: 0 0 220px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+#uc-root .angle-display { padding:10px 14px; }
+#uc-root .angle-display .value { font-size:1.57rem; }
+#uc-root .angle-display .value-rad { font-size:0.95rem; }
+#uc-root .trig-card { padding:8px 12px; }
+#uc-root .trig-card .fn-val { font-size:1.12rem; }
+#uc-root .coord-card { padding:8px 12px; }
+#uc-root .coord-val { font-size:1.01rem; }
+#uc-root .quadrant-badge { padding:8px 12px; font-size:0.73rem; }
+#uc-root .hint-text { display:none; }
+/* Report */
+.report-page{max-width:820px;margin:0 auto;padding:40px 28px 80px;}
+.report-topbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:36px;padding-bottom:16px;border-bottom:1px solid var(--border);}
+.rpt-title{font-size:24.5px;font-weight:900;color:var(--yellow);letter-spacing:-1px;}
+.rpt-title small{font-size:10px;font-weight:normal;letter-spacing:3px;display:block;color:var(--muted);margin-bottom:4px;}
+.rpt-back{font-family:'Courier New',Courier,monospace;font-size:11px;letter-spacing:2px;padding:8px 18px;border:1px solid var(--border);background:transparent;color:var(--muted);cursor:pointer;transition:all .15s;}
+.rpt-back:hover{color:var(--blue);border-color:var(--blue);}
+.rpt-student{border:1px solid var(--border);background:var(--surface);padding:18px 22px;margin-bottom:28px;display:grid;grid-template-columns:1fr 1fr;gap:12px 28px;}
+.rpt-field{font-size:12.5px;}.rpt-field-label{font-size:9px;letter-spacing:3px;text-transform:uppercase;color:var(--blue);margin-bottom:3px;}.rpt-field-val{color:var(--ink);}
+.rpt-section-label{font-size:10px;letter-spacing:3px;text-transform:uppercase;color:var(--muted);border-bottom:1px solid var(--border);padding-bottom:8px;margin-bottom:16px;}
+.rpt-summary{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:28px;}
+.sum-box{background:var(--surface);border:1px solid var(--border);padding:16px;text-align:center;}
+.sum-val{font-size:36px;font-weight:900;line-height:1;margin-bottom:4px;}.sum-lbl{font-size:9px;letter-spacing:3px;text-transform:uppercase;color:var(--muted);}
+.rpt-table{width:100%;border-collapse:collapse;font-size:12.5px;margin-bottom:28px;}
+.rpt-table th{text-align:left;padding:8px 12px;border-bottom:2px solid var(--border);font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);font-weight:normal;}
+.rpt-table td{padding:10px 12px;border-bottom:1px solid var(--border);vertical-align:middle;}
+.rpt-table tr:last-child td{border-bottom:none;}
+.sdot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:6px;vertical-align:middle;}
+.sdot-g{background:var(--green);box-shadow:0 0 4px var(--green);}.sdot-y{background:var(--yellow);}.sdot-d{background:var(--dim);}
+.sh{color:var(--green);font-size:14.5px;font-weight:bold;}.sna{color:var(--muted);font-style:italic;}
+.rpt-notes{border:1px solid var(--border);background:var(--surface);padding:18px 22px;margin-bottom:24px;border-left:3px solid var(--yellow);}
+.rpt-notes-title{font-size:10px;letter-spacing:3px;text-transform:uppercase;color:var(--yellow);margin-bottom:10px;}
+.rpt-notes-text{font-size:12.5px;color:var(--ink);line-height:2;}
+.print-btn{font-family:'Courier New',Courier,monospace;font-size:12.5px;font-weight:bold;letter-spacing:3px;text-transform:uppercase;padding:14px 36px;background:var(--yellow);color:var(--bg);border:none;cursor:pointer;}
+@media print{
+  body::before,body::after,.hud,.rpt-back,.print-btn{display:none!important;}
+  body{background:#fff!important;color:#111!important;}
+  #screen-home,#screen-tool{display:none!important;}
+  #screen-report{display:block!important;}
+}
+
+
+/* === unit-circle === */
+#uc-root {
+  font-family: 'Space Mono', monospace;
+  color: #e8e8f0;
+}
+#uc-root header { display: none; }
+#uc-root .uc-page {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px 28px 28px;
+  width: 100%;
+  max-width: 900px;
+  margin: 0 auto;
+  box-sizing: border-box;
+}
+#uc-root .uc-snap-bar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 18px;
+  align-self: flex-end;
+}
+#uc-root .uc-snap-label {
+  font-size: 0.65rem;
+  color: #6b6b8a;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+}
+#uc-root .uc-snap-btn {
+  font-family: 'Space Mono', monospace;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  padding: 5px 16px;
+  border: 2px solid #a78bfa;
+  background: rgba(167,139,250,0.15);
+  color: #a78bfa;
+  cursor: pointer;
+  border-radius: 20px;
+  transition: all 0.2s;
+}
+#uc-root .uc-snap-btn:hover { background: rgba(167,139,250,0.25); }
+#uc-root .uc-snap-btn.off {
+  border-color: #2a2a3d;
+  background: transparent;
+  color: #6b6b8a;
+}
+#uc-root .uc-layout {
+  display: flex;
+  flex-direction: row;
+  gap: 24px;
+  align-items: flex-start;
+  width: 100%;
+  justify-content: center;
+}
+#uc-root .uc-canvas-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  flex: 0 0 auto;
+}
+#uc-root .uc-hint {
+  font-size: 0.62rem;
+  color: #6b6b8a;
+  text-align: center;
+}
+#uc-root .snap-toggle {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.7rem;
+  color: #6b6b8a;
+  cursor: pointer;
+  user-select: none;
+}
+#uc-root .snap-toggle input { display: none; }
+#uc-root .toggle-pill {
+  width: 40px; height: 22px;
+  background: #2a2a3d;
+  border-radius: 11px;
+  position: relative;
+  transition: background 0.2s;
+}
+#uc-root .toggle-pill::after {
+  content: '';
+  position: absolute;
+  width: 16px; height: 16px;
+  background: #6b6b8a;
+  border-radius: 50%;
+  top: 3px; left: 3px;
+  transition: transform 0.2s, background 0.2s;
+}
+#uc-root .snap-toggle input:checked + .toggle-pill { background: #a78bfa; }
+#uc-root .snap-toggle input:checked + .toggle-pill::after {
+  transform: translateX(18px);
+  background: white;
+}
+#uc-root .main {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  gap: 20px;
+  padding: 16px 20px;
+  align-items: flex-start;
+  width: 100%;
+  box-sizing: border-box;
+}
+#uc-root .canvas-wrap {
+  flex: 0 0 420px;
+  position: relative;
+}
+#uc-root canvas {
+  display: block;
+  cursor: crosshair;
+  border-radius: 12px;
+  width: 420px;
+  height: 420px;
+}
+#uc-root .info-panel {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 180px;
+  max-width: 240px;
+}
+#uc-root .angle-display {
+  background: #12121a;
+  border: 1px solid #2a2a3d;
+  border-radius: 12px;
+  padding: 10px 14px;
+}
+#uc-root .angle-display .label {
+  font-size: 0.65rem;
+  color: #6b6b8a;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  margin-bottom: 6px;
+}
+#uc-root .angle-display .value {
+  font-family: 'Space Mono', monospace;
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: #a78bfa;
+}
+#uc-root .angle-display .value-rad {
+  font-size: 0.85rem;
+  color: #6b6b8a;
+  margin-top: 4px;
+}
+#uc-root .trig-cards {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+#uc-root .trig-card {
+  background: #12121a;
+  border: 1px solid #2a2a3d;
+  border-radius: 10px;
+  padding: 8px 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+#uc-root .trig-card.sin { border-left: 3px solid #ff6b6b; }
+#uc-root .trig-card.cos { border-left: 3px solid #4ecdc4; }
+#uc-root .trig-card.tan { border-left: 3px solid #ffe66d; }
+#uc-root .trig-card .fn-name {
+  font-size: 0.7rem;
+  color: #6b6b8a;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+#uc-root .trig-card .fn-val {
+  font-family: 'Space Mono', monospace;
+  font-weight: 700;
+  font-size: 1rem;
+}
+#uc-root .trig-card.sin .fn-val { color: #ff6b6b; }
+#uc-root .trig-card.cos .fn-val { color: #4ecdc4; }
+#uc-root .trig-card.tan .fn-val { color: #ffe66d; }
+#uc-root .coord-card {
+  background: #12121a;
+  border: 1px solid #2a2a3d;
+  border-radius: 10px;
+  padding: 8px 12px;
+}
+#uc-root .coord-card .label {
+  font-size: 0.65rem;
+  color: #6b6b8a;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  margin-bottom: 8px;
+}
+#uc-root .coord-val {
+  font-family: 'Space Mono', monospace;
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: #e8e8f0;
+}
+#uc-root .quadrant-badge {
+  background: #12121a;
+  border: 1px solid #2a2a3d;
+  border-radius: 10px;
+  padding: 8px 12px;
+  font-size: 0.65rem;
+  color: #6b6b8a;
+}
+#uc-root .quadrant-badge .q-title {
+  color: #e8e8f0;
+  margin-bottom: 8px;
+  font-size: 0.7rem;
+}
+#uc-root .quadrant-badge .q-title span { color: #a78bfa; font-weight: 700; }
+#uc-root .quadrant-badge .q-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 4px;
+  font-size: 0.7rem;
+}
+#uc-root .quadrant-badge .q-fn { width: 32px; color: #6b6b8a; }
+#uc-root .q-pos { color: #4ecdc4; font-weight: 700; }
+#uc-root .q-neg { color: #ff6b6b; font-weight: 700; }
+#uc-root .hint-text { display: none; }
+
+/* === radian-visualizer === */
+#rv-root {
+  font-family: 'Share Tech Mono', monospace;
+  color: #e8e8ff;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: #0a0a0f;
+  background-image:
+    linear-gradient(rgba(0,207,255,0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0,207,255,0.03) 1px, transparent 1px);
+  background-size: 28px 28px;
+}
+#rv-root header { display: none; }
+#rv-root .main {
+  width: 100%;
+  max-width: 960px;
+  padding: 20px 28px;
+  display: flex;
+  gap: 28px;
+  align-items: flex-start;
+}
+#rv-root .canvas-col {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+#rv-root canvas {
+  background: #0f0f1a;
+  border: 1.5px solid #2a2a4a;
+  border-radius: 2px;
+  display: block;
+  width: 100%;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+#rv-root canvas.snapped {
+  border-color: #ffe600;
+  box-shadow: 0 0 16px rgba(255,230,0,0.35), 0 0 40px rgba(255,230,0,0.12);
+}
+#rv-root .slider-wrap { display: flex; flex-direction: column; gap: 10px; }
+#rv-root .slider-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+#rv-root .slider-label {
+  font-size: 0.68rem;
+  color: #5a5a8a;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+#rv-root .slider-val {
+  font-family: 'VT323', monospace;
+  font-size: 1.5rem;
+  color: #ffe600;
+  text-shadow: 0 0 8px #ffe600;
+}
+#rv-root input[type=range] {
+  -webkit-appearance: none;
+  width: 100%; height: 3px;
+  background: #2a2a4a;
+  outline: none; border-radius: 2px; cursor: pointer;
+}
+#rv-root input[type=range]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 20px; height: 20px; border-radius: 50%;
+  background: #ffe600;
+  border: 3px solid #0a0a0f;
+  box-shadow: 0 0 8px #ffe600;
+  cursor: pointer;
+}
+#rv-root .snap-buttons { display: flex; gap: 6px; flex-wrap: wrap; }
+#rv-root .snap-btn {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.65rem;
+  padding: 6px 10px;
+  border: 1.5px solid #2a2a4a;
+  background: transparent;
+  color: #5a5a8a;
+  cursor: pointer;
+  border-radius: 2px;
+  transition: all 0.15s;
+  flex: 1;
+  text-align: center;
+  white-space: nowrap;
+}
+#rv-root .snap-btn:hover { border-color: #ffe600; color: #ffe600; }
+#rv-root .snap-btn.active {
+  background: rgba(255,230,0,0.1);
+  color: #ffe600;
+  border-color: #ffe600;
+  box-shadow: 0 0 8px rgba(255,230,0,0.25);
+}
+#rv-root .info-col {
+  width: 220px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+#rv-root .panel-label {
+  font-size: 0.58rem;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  color: #5a5a8a;
+  border-bottom: 1px solid #2a2a4a;
+  padding-bottom: 6px;
+  margin-bottom: 2px;
+}
+#rv-root .big-display {
+  background: #0f0f1a;
+  border: 1.5px solid #2a2a4a;
+  border-left: 4px solid #ffe600;
+  padding: 12px 14px;
+}
+#rv-root .big-display .bd-label { font-size: 0.58rem; color: #5a5a8a; margin-bottom: 4px; }
+#rv-root .big-display .bd-val {
+  font-family: 'VT323', monospace;
+  font-size: 2.4rem;
+  line-height: 1;
+  color: #ffe600;
+  text-shadow: 0 0 10px #ffe600;
+}
+#rv-root .big-display .bd-sub { font-size: 0.65rem; color: #5a5a8a; margin-top: 4px; }
+#rv-root .info-card {
+  background: #0f0f1a;
+  border: 1.5px solid #2a2a4a;
+  padding: 10px 12px;
+}
+#rv-root .info-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  padding: 5px 0;
+  border-bottom: 1px solid #2a2a4a;
+  font-size: 0.7rem;
+}
+#rv-root .info-row:last-child { border-bottom: none; }
+#rv-root .info-row .ir-label { color: #5a5a8a; }
+#rv-root .info-row .ir-val { font-weight: 600; }
+#rv-root .formula-box {
+  background: #0f0f1a;
+  border: 1.5px solid #2a2a4a;
+  border-left: 4px solid #00cfff;
+  padding: 10px 12px;
+  font-size: 0.66rem;
+  color: #5a5a8a;
+  line-height: 2;
+}
+#rv-root .formula-box .f-eq {
+  font-family: 'VT323', monospace;
+  font-size: 1.3rem;
+  color: #00cfff;
+  text-shadow: 0 0 8px #00cfff;
+  display: block;
+  margin: 4px 0;
+}
+#rv-root .fact-box {
+  background: #0f0f1a;
+  border: 1.5px solid #2a2a4a;
+  border-left: 4px solid #39ff14;
+  padding: 10px 12px;
+  font-size: 0.65rem;
+  color: #5a5a8a;
+  line-height: 2;
+}
+#rv-root .fact-box strong { color: #39ff14; display: block; margin-bottom: 2px; }
+#rv-root .hint { font-size: 0.62rem; color: #5a5a8a; text-align: center; }
+
+
+/* === fill-in-the-blank === */
+</style>
+</head>
+<body>
+
+<div class="hud tl">TRIG.SUITE // v2.0</div>
+<div class="hud tr" id="hudClock"></div>
+<div class="hud bl">SIN &middot; COS &middot; TAN &middot; UNIT CIRCLE &middot; RADIANS</div>
+<div class="hud br"><span class="blink">&#9632;</span> READY</div>
+
+<div id="screen-home">
+<div class="home-page">
+  <div class="hero">
+    <div class="hero-tag">Mission Briefing &middot; Trigonometry Suite</div>
+    <div class="hero-title"><div class="t-g">THE UNIT CIRCLE</div><div class="t-b">PROTOCOL</div></div>
+    <div class="hero-sub">Six interactive missions &middot; Trig &middot; Special Right Triangles</div>
+    <div class="hero-prompt">AWAITING STUDENT IDENTIFICATION<span class="cursor"></span></div>
+    <div class="hero-divider"></div>
+  </div>
+  <div class="step-head"><span class="step-num">01</span><span class="step-label">Student Dossier</span></div>
+  <div class="dossier">
+    <div class="dossier-hdr">CLASSIFIED // STUDENT FILE <span id="nameDisplay">UNIDENTIFIED</span></div>
+    <div class="dossier-grid">
+      <div class="d-field"><label class="d-label" for="fName">Full Name <span class="req">*</span></label><input class="d-input" id="fName" type="text" placeholder="Enter your name" oninput="onInput(this);updateState()"></div>
+      <div class="d-field"><label class="d-label" for="fDate">Session Date</label><input class="d-input" id="fDate" type="date" oninput="onInput(this)"></div>
+      <div class="d-field"><label class="d-label" for="fClass">Class / Period</label><input class="d-input" id="fClass" type="text" placeholder="e.g. Pre-Calc Period 3" oninput="onInput(this)"></div>
+      <div class="d-field"><label class="d-label" for="fTeacher">Teacher</label><input class="d-input" id="fTeacher" type="text" placeholder="e.g. Ms. Rivera" oninput="onInput(this)"></div>
+    </div>
+  </div>
+  <div class="missions-wrap">
+    <div class="step-head"><span class="step-num">02</span><span class="step-label">Select a Mission</span></div>
+    <div class="sel-bar"><div class="sel-dots" id="selDots"></div><span class="sel-count" id="selCount">0 of 6 completed</span></div>
+    <div class="missions-grid" id="missionsGrid"></div>
+  </div>
+  <div class="step-head"><span class="step-num">03</span><span class="step-label">Launch or Report</span></div>
+  <div class="actions-row">
+    <button class="btn-launch" id="launchBtn" disabled onclick="doLaunch()"><span>Launch Selected Mission</span></button>
+    <button class="btn-report" id="reportBtn" disabled onclick="showReport()">View Progress Report</button>
+    <div class="launch-status" id="launchStatus">Enter your name to begin</div>
+  </div>
+  <div class="progress-strip" id="progressStrip" style="display:none">
+    <div class="prog-title">Mission Log</div>
+    <div id="progItems"></div>
+  </div>
+</div>
+</div>
+
+<div id="screen-tool">
+<section id="section-unit-circle" class="tool-section">
+  <div class="tool-topbar">
+    <div class="ttb-left">
+      <button class="back-btn-tool" onclick="goHome()">&#8592; Missions</button>
+      <span class="ttb-name">Unit Circle Explorer</span>
+    </div>
+    <div class="ttb-right">
+      <span class="type-pill exp-pill">explorer</span>
+      
+      <button class="done-btn" onclick="markDone('unit-circle')">&#10003; Done &amp; Return</button>
+    </div>
+  </div>
+  <div id="uc-root">
+<div class="uc-page">
+
+  <div class="uc-snap-bar">
+    <span class="uc-snap-label">Special Angle Lock</span>
+    <button class="uc-snap-btn active" id="uc-snapBtn" onclick="ucToggleSnap()">ON</button>
+    <input type="checkbox" id="uc-snapToggle" checked style="display:none">
+  </div>
+
+  <div class="uc-layout">
+    <div class="uc-canvas-wrap">
+      <canvas id="uc-c" width="480" height="480"></canvas>
+      <div class="uc-hint">Click or drag to move the angle</div>
+    </div>
+
+    <div class="info-panel">
+      <div class="angle-display">
+        <div class="label">Angle</div>
+        <div class="value" id="uc-degVal">0°</div>
+        <div class="value-rad" id="uc-radVal">0</div>
+      </div>
+
+      <div class="trig-cards">
+        <div class="trig-card sin">
+          <div class="fn-name">sin θ <span style="font-size:0.67rem;color:#555">(y)</span></div>
+          <div class="fn-val" id="uc-sinVal">0</div>
+        </div>
+        <div class="trig-card cos">
+          <div class="fn-name">cos θ <span style="font-size:0.67rem;color:#555">(x)</span></div>
+          <div class="fn-val" id="uc-cosVal">1</div>
+        </div>
+        <div class="trig-card tan">
+          <div class="fn-name">tan θ <span style="font-size:0.67rem;color:#555">(sin/cos)</span></div>
+          <div class="fn-val" id="uc-tanVal">0</div>
+        </div>
+      </div>
+
+      <div class="coord-card">
+        <div class="label">Point on Circle</div>
+        <div class="coord-val" id="uc-coordVal">(1, 0)</div>
+      </div>
+
+      <div class="quadrant-badge" id="uc-quadrantBadge">
+        <div class="q-title">Quadrant: <span id="uc-qNum">I</span></div>
+        <div class="q-row"><span class="q-fn">sin</span> <span id="uc-qSin" class="q-pos">positive</span></div>
+        <div class="q-row"><span class="q-fn">cos</span> <span id="uc-qCos" class="q-pos">positive</span></div>
+        <div class="q-row"><span class="q-fn">tan</span> <span id="uc-qTan" class="q-pos">positive</span></div>
+      </div>
+    </div>
+  </div>
+
+</div>
+  </div>
+</section>
+<section id="section-radian-visualizer" class="tool-section">
+  <div class="tool-topbar">
+    <div class="ttb-left">
+      <button class="back-btn-tool" onclick="goHome()">&#8592; Missions</button>
+      <span class="ttb-name">Radian Visualizer</span>
+    </div>
+    <div class="ttb-right">
+      <span class="type-pill exp-pill">explorer</span>
+      
+      <button class="done-btn" onclick="markDone('radian-visualizer')">&#10003; Done &amp; Return</button>
+    </div>
+  </div>
+  <div id="rv-root">
+<header>
+  <h1>Radian <span>Visualizer</span></h1>
+  <div class="header-sub">
+    θ (radians) = Arc Length ÷ Radius<br>
+    When radius = 1, θ = arc length
+  </div>
+</header>
+
+<div class="main">
+  <div class="canvas-col">
+    <canvas id="rv-c" height="420"></canvas>
+
+    <div class="slider-wrap">
+      <div class="slider-row">
+        <span class="slider-label">Angle</span>
+        <span class="slider-val" id="rv-sliderVal">π</span>
+      </div>
+      <input type="range" id="rv-angleSlider" min="0" max="628" value="314" step="1">
+      <div class="snap-buttons">
+        <button class="snap-btn" onclick="rvSnapTo(0)">0</button>
+        <button class="snap-btn" onclick="rvSnapTo(Math.PI/6)">π/6</button>
+        <button class="snap-btn" onclick="rvSnapTo(Math.PI/4)">π/4</button>
+        <button class="snap-btn" onclick="rvSnapTo(Math.PI/3)">π/3</button>
+        <button class="snap-btn" onclick="rvSnapTo(Math.PI/2)">π/2</button>
+        <button class="snap-btn" onclick="rvSnapTo(Math.PI)">π</button>
+        <button class="snap-btn" onclick="rvSnapTo(3*Math.PI/2)">3π/2</button>
+        <button class="snap-btn" onclick="rvSnapTo(2*Math.PI)">2π</button>
+      </div>
+    </div>
+    <div class="hint">drag slider</div>
+  </div>
+
+  <div class="info-col">
+    <div class="panel-label">Current Angle</div>
+
+    <div class="big-display">
+      <div class="bd-label">Radians</div>
+      <div class="bd-val" id="rv-radVal">π</div>
+
+    </div>
+
+    <div class="info-card">
+      <div class="panel-label">Measurements</div>
+      <div class="info-row">
+        <span class="ir-label">Degrees</span>
+        <span class="ir-val" id="rv-degVal" style="color:var(--neon-yellow)">180°</span>
+      </div>
+      <div class="info-row">
+        <span class="ir-label">Arc Length</span>
+        <span class="ir-val" id="rv-arcVal" style="color:var(--arc-color)">π · r</span>
+      </div>
+      <div class="info-row">
+        <span class="ir-label">Radii fit in arc</span>
+        <span class="ir-val" id="rv-fitsVal" style="color:var(--neon-green)">≈ 3.14</span>
+      </div>
+    </div>
+
+    <div class="formula-box">
+      <span style="color:var(--muted);font-size:0.69rem;">DEFINITION</span>
+      <span class="f-eq">θ = arc / r</span>
+      1 radian = arc length equal to radius<br>
+      2π radians = 360°<br>
+      1 rad ≈ 57.296°
+    </div>
+
+    <div class="fact-box" id="rv-factBox">
+      <strong>Drag the slider!</strong>
+      Watch the arc grow and see how many radii fit along it.
+    </div>
+  </div>
+</div>
+  </div>
+</section>
+<section id="section-triangle-morphing" class="tool-section">
+  <div class="tool-topbar">
+    <div class="ttb-left">
+      <button class="back-btn-tool" onclick="goHome()">&#8592; Missions</button>
+      <span class="ttb-name">Triangle Morphing</span>
+    </div>
+    <div class="ttb-right">
+      <span class="type-pill exp-pill">explorer</span>
+      
+      <button class="done-btn" onclick="markDone('triangle-morphing')">&#10003; Done &amp; Return</button>
+    </div>
+  </div>
+  <div id="tm-root" style="width:100%;"><iframe id="tm-iframe" srcdoc="<!DOCTYPE html>
+<html lang=&quot;en&quot;>
+<head>
+<meta charset=&quot;UTF-8&quot;>
+<meta name=&quot;viewport&quot; content=&quot;width=device-width, initial-scale=1.0&quot;>
+<title>Triangle Morphing Demo</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=VT323&amp;family=Share+Tech+Mono&amp;display=swap');
+
+  :root {
+    --bg: #0a0a0f;
+    --surface: #0f0f1a;
+    --border: #2a2a4a;
+    --ink: #e8e8ff;
+    --muted: #5a5a8a;
+    --blue: #00cfff;
+    --red: #ff2d78;
+    --green: #39ff14;
+    --gold: #ffe600;
+    --hyp-color: #00cfff;
+    --opp-color: #ff2d78;
+    --adj-color: #39ff14;
+    --angle-color: #ffe600;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: 'Share Tech Mono', monospace;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-image:
+      linear-gradient(rgba(0,207,255,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,207,255,0.03) 1px, transparent 1px);
+    background-size: 24px 24px;
+  }
+
+  /* Scanline overlay */
+  body::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background: repeating-linear-gradient(
+      0deg, transparent, transparent 2px,
+      rgba(0,0,0,0.07) 2px, rgba(0,0,0,0.07) 4px
+    );
+    pointer-events: none;
+    z-index: 100;
+  }
+
+  header {
+    width: 100%;
+    max-width: 900px;
+    padding: 32px 40px 0;
+    border-bottom: 2px solid var(--border);
+    margin-bottom: 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    padding-bottom: 12px;
+  }
+
+  h1 {
+    font-family: 'VT323', monospace;
+    font-weight: 400;
+    font-size: 2.8rem;
+    letter-spacing: 0.05em;
+    color: var(--green);
+    text-shadow: 0 0 12px var(--green), 0 0 30px rgba(57,255,20,0.3);
+    line-height: 1;
+  }
+
+  h1 em {
+    font-style: normal;
+    color: var(--blue);
+    text-shadow: 0 0 12px var(--blue), 0 0 30px rgba(0,207,255,0.3);
+  }
+
+  .header-sub {
+    font-size: 0.7rem;
+    color: var(--muted);
+    text-align: right;
+    line-height: 1.8;
+  }
+
+  .main {
+    display: flex;
+    gap: 0;
+    width: 100%;
+    max-width: 900px;
+    padding: 32px 40px;
+    align-items: flex-start;
+    gap: 40px;
+  }
+
+  .canvas-section {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  canvas {
+    background: var(--surface);
+    border: 1.5px solid var(--border);
+    border-radius: 2px;
+    display: block;
+    width: 100%;
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+
+  canvas.snapped {
+    border-color: var(--gold);
+    box-shadow: 0 0 16px rgba(255,230,0,0.4), 0 0 40px rgba(255,230,0,0.15);
+  }
+
+  /* Slider */
+  .slider-wrap {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .slider-label-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .slider-label {
+    font-size: 0.7rem;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+  }
+
+  .slider-val {
+    font-family: 'VT323', monospace;
+    font-size: 1.4rem;
+    color: var(--gold);
+    text-shadow: 0 0 8px var(--gold);
+  }
+
+  input[type=range] {
+    -webkit-appearance: none;
+    width: 100%;
+    height: 3px;
+    background: var(--border);
+    outline: none;
+    border-radius: 2px;
+    cursor: pointer;
+  }
+
+  input[type=range]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: var(--gold);
+    border: 3px solid var(--bg);
+    box-shadow: 0 0 8px var(--gold);
+    cursor: pointer;
+  }
+
+  .snap-buttons {
+    display: flex;
+    gap: 8px;
+  }
+
+  .snap-btn {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.75rem;
+    padding: 8px 12px;
+    border: 1.5px solid var(--border);
+    background: transparent;
+    color: var(--muted);
+    cursor: pointer;
+    border-radius: 2px;
+    transition: all 0.15s;
+    flex: 1;
+    text-align: center;
+  }
+
+  .snap-btn:hover {
+    border-color: var(--gold);
+    color: var(--gold);
+    box-shadow: 0 0 8px rgba(255,230,0,0.2);
+  }
+
+  .snap-btn.active {
+    background: rgba(255,230,0,0.1);
+    color: var(--gold);
+    border-color: var(--gold);
+    box-shadow: 0 0 10px rgba(255,230,0,0.3);
+  }
+
+  /* Info panel */
+  .info-panel {
+    width: 220px;
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .panel-title {
+    font-size: 0.6rem;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    color: var(--muted);
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 6px;
+  }
+
+  .angle-badge {
+    background: var(--surface);
+    border: 1.5px solid var(--border);
+    border-left: 4px solid var(--angle-color);
+    padding: 12px 14px;
+    border-radius: 0 2px 2px 0;
+    box-shadow: 0 0 12px rgba(255,230,0,0.08);
+  }
+
+  .angle-badge .ab-label {
+    font-size: 0.6rem;
+    color: var(--muted);
+    margin-bottom: 4px;
+  }
+
+  .angle-badge .ab-val {
+    font-family: 'VT323', monospace;
+    font-size: 2.2rem;
+    color: var(--angle-color);
+    text-shadow: 0 0 10px var(--angle-color);
+    line-height: 1;
+  }
+
+  .angle-badge .ab-sub {
+    font-size: 0.65rem;
+    color: var(--muted);
+    margin-top: 2px;
+  }
+
+  .sides-card {
+    background: var(--surface);
+    border: 1.5px solid var(--border);
+    padding: 12px 14px;
+    border-radius: 2px;
+  }
+
+  .side-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 6px 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 0.75rem;
+    color: var(--ink);
+  }
+
+  .side-row:last-child { border-bottom: none; }
+
+  .side-name {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--muted);
+  }
+
+  .side-dot {
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    box-shadow: 0 0 6px currentColor;
+  }
+
+  .side-val { font-weight: 500; }
+
+  .trig-card {
+    background: var(--surface);
+    border: 1.5px solid var(--border);
+    padding: 12px 14px;
+    border-radius: 2px;
+  }
+
+  .trig-row {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    padding: 6px 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 0.75rem;
+  }
+
+  .trig-row:last-child { border-bottom: none; }
+
+  .trig-fn { color: var(--muted); }
+  .trig-val { font-weight: 500; }
+
+  .trig-val.sin-c { color: var(--opp-color); text-shadow: 0 0 6px var(--opp-color); }
+  .trig-val.cos-c { color: var(--adj-color); text-shadow: 0 0 6px var(--adj-color); }
+  .trig-val.tan-c { color: var(--blue); text-shadow: 0 0 6px var(--blue); }
+
+  .type-badge {
+    background: transparent;
+    border: 1.5px solid var(--green);
+    color: var(--green);
+    text-shadow: 0 0 8px var(--green);
+    font-size: 0.7rem;
+    padding: 8px 12px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    text-align: center;
+    border-radius: 2px;
+    box-shadow: 0 0 12px rgba(57,255,20,0.15);
+  }
+
+  .memory-tip {
+    background: var(--surface);
+    border: 1.5px solid var(--border);
+    border-left: 4px solid var(--green);
+    padding: 12px 14px;
+    font-size: 0.68rem;
+    color: var(--muted);
+    line-height: 2;
+    border-radius: 0 2px 2px 0;
+  }
+
+  .memory-tip strong {
+    color: var(--green);
+    display: block;
+    margin-bottom: 4px;
+    font-size: 0.7rem;
+  }
+
+  .hint {
+    font-size: 0.65rem;
+    color: var(--muted);
+    text-align: center;
+    padding-bottom: 12px;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Special Right<br><em>Triangles</em></h1>
+  <div class=&quot;header-sub&quot;>
+    Drag the slider to morph<br>between triangle types
+  </div>
+</header>
+
+<div class=&quot;main&quot;>
+  <div class=&quot;canvas-section&quot;>
+    <canvas id=&quot;c&quot; height=&quot;340&quot;></canvas>
+
+    <div class=&quot;slider-wrap&quot;>
+      <div class=&quot;slider-label-row&quot;>
+        <span class=&quot;slider-label&quot;>Angle θ</span>
+        <span class=&quot;slider-val&quot; id=&quot;sliderVal&quot;>45°</span>
+      </div>
+      <input type=&quot;range&quot; id=&quot;angleSlider&quot; min=&quot;20&quot; max=&quot;70&quot; value=&quot;45&quot; step=&quot;1&quot;>
+      <div class=&quot;snap-buttons&quot;>
+        <button class=&quot;snap-btn&quot; onclick=&quot;snapTo(30)&quot;>30°</button>
+        <button class=&quot;snap-btn active&quot; onclick=&quot;snapTo(45)&quot;>45°</button>
+        <button class=&quot;snap-btn&quot; onclick=&quot;snapTo(60)&quot;>60°</button>
+      </div>
+      <div class=&quot;hint&quot;>← drag slider or click angle buttons →</div>
+    </div>
+  </div>
+
+  <div class=&quot;info-panel&quot;>
+    <div class=&quot;panel-title&quot;>Triangle Properties</div>
+
+    <div class=&quot;type-badge&quot; id=&quot;typeBadge&quot;>45 – 45 – 90</div>
+
+    <div class=&quot;angle-badge&quot;>
+      <div class=&quot;ab-label&quot;>Active angle θ</div>
+      <div class=&quot;ab-val&quot; id=&quot;angleVal&quot;>45°</div>
+      <div class=&quot;ab-sub&quot; id=&quot;radVal&quot;>π/4 radians</div>
+    </div>
+
+    <div class=&quot;sides-card&quot;>
+      <div class=&quot;panel-title&quot; style=&quot;margin-bottom:8px&quot;>Side Ratios</div>
+      <div class=&quot;side-row&quot;>
+        <div class=&quot;side-name&quot;>
+          <div class=&quot;side-dot&quot; style=&quot;background:var(--hyp-color)&quot;></div>
+          <span>Hypotenuse</span>
+        </div>
+        <span class=&quot;side-val&quot; id=&quot;hypVal&quot; style=&quot;color:var(--hyp-color)&quot;>√2</span>
+      </div>
+      <div class=&quot;side-row&quot;>
+        <div class=&quot;side-name&quot;>
+          <div class=&quot;side-dot&quot; style=&quot;background:var(--opp-color)&quot;></div>
+          <span>Opposite</span>
+        </div>
+        <span class=&quot;side-val&quot; id=&quot;oppVal&quot; style=&quot;color:var(--opp-color)&quot;>1</span>
+      </div>
+      <div class=&quot;side-row&quot;>
+        <div class=&quot;side-name&quot;>
+          <div class=&quot;side-dot&quot; style=&quot;background:var(--adj-color)&quot;></div>
+          <span>Adjacent</span>
+        </div>
+        <span class=&quot;side-val&quot; id=&quot;adjVal&quot; style=&quot;color:var(--adj-color)&quot;>1</span>
+      </div>
+    </div>
+
+    <div class=&quot;trig-card&quot;>
+      <div class=&quot;panel-title&quot; style=&quot;margin-bottom:8px&quot;>Trig Values</div>
+      <div class=&quot;trig-row&quot;>
+        <span class=&quot;trig-fn&quot;>sin θ =</span>
+        <span class=&quot;trig-val sin-c&quot; id=&quot;sinVal&quot;>1/√2</span>
+      </div>
+      <div class=&quot;trig-row&quot;>
+        <span class=&quot;trig-fn&quot;>cos θ =</span>
+        <span class=&quot;trig-val cos-c&quot; id=&quot;cosVal&quot;>1/√2</span>
+      </div>
+      <div class=&quot;trig-row&quot;>
+        <span class=&quot;trig-fn&quot;>tan θ =</span>
+        <span class=&quot;trig-val tan-c&quot; id=&quot;tanVal&quot;>1</span>
+      </div>
+    </div>
+
+    <div class=&quot;memory-tip&quot; id=&quot;memTip&quot;>
+      <strong>45 – 45 – 90 Triangle</strong>
+      • Both legs are equal<br>
+      • Sides are in ratio  1 : 1 : √2<br>
+      • Hypotenuse = leg × √2<br>
+      • sin 45° = cos 45° = 1/√2
+    </div>
+  </div>
+</div>
+
+<script>
+const canvas = document.getElementById('c');
+const ctx = canvas.getContext('2d');
+const slider = document.getElementById('angleSlider');
+
+// Special angle data
+const SPECIAL = {
+  30: {
+    type: '30 – 60 – 90',
+    hyp: '2', opp: '1', adj: '√3',
+    sin: '1/2', cos: '√3/2', tan: '1/√3',
+    rad: 'π/6',
+    tip: `<strong>30 – 60 – 90 Triangle</strong>
+• Sides are in ratio  1 : √3 : 2
+• Half of an equilateral triangle
+• Hypotenuse is always double the short leg
+• sin 30° = 1/2,  cos 30° = √3/2`,
+  },
+  45: {
+    type: '45 – 45 – 90',
+    hyp: '√2', opp: '1', adj: '1',
+    sin: '1/√2', cos: '1/√2', tan: '1',
+    rad: 'π/4',
+    tip: `<strong>45 – 45 – 90 Triangle</strong>
+• Both legs are equal
+• Sides are in ratio  1 : 1 : √2
+• Hypotenuse = leg × √2
+• sin 45° = cos 45° = 1/√2`,
+  },
+  60: {
+    type: '30 – 60 – 90',
+    hyp: '2', opp: '√3', adj: '1',
+    sin: '√3/2', cos: '1/2', tan: '√3',
+    rad: 'π/3',
+    tip: `<strong>30 – 60 – 90 Triangle</strong>
+• Sides are in ratio  1 : √3 : 2
+• Same triangle as 30°, θ is now the larger angle
+• sin 60° = √3/2,  cos 60° = 1/2
+• tan 60° = √3`,
+  },
+};
+
+function getSpecialSnap(deg) {
+  const rounded = Math.round(deg);
+  return [30, 45, 60].includes(rounded) ? rounded : null;
+}
+
+function fmt(n) {
+  if (Math.abs(n) < 1e-9) return '0';
+  return parseFloat(n.toFixed(4)).toString();
+}
+
+function draw(deg) {
+  const W = canvas.clientWidth || 480;
+  canvas.width = W;
+  const H = canvas.height;
+  ctx.clearRect(0, 0, W, H);
+
+  const snap = getSpecialSnap(deg);
+  const rad = deg * Math.PI / 180;
+
+  // Triangle geometry — fixed adjacent, hyp/opp scale
+  const margin = 60;
+  const maxAdj = W - margin * 2;
+  const maxOpp = H - margin * 2 - 40;
+
+  // Normalize so hypotenuse = 1 visually
+  const adjN = Math.cos(rad);  // adjacent / hyp
+  const oppN = Math.sin(rad);  // opposite / hyp
+
+  const scale = Math.min(maxAdj / adjN, maxOpp / oppN) * 0.72;
+  const adj = adjN * scale;
+  const opp = oppN * scale;
+  const hyp = scale;
+
+  const bx = margin + (maxAdj - adj) / 2;
+  const by = margin + 40 + (maxOpp - opp) / 2 + opp;
+
+  // corners
+  const A = {x: bx, y: by};           // bottom-left (right angle)
+  const B = {x: bx + adj, y: by};     // bottom-right (angle = deg)
+  const C = {x: bx, y: by - opp};     // top-left
+
+  // Fill triangle
+  ctx.beginPath();
+  ctx.moveTo(A.x, A.y);
+  ctx.lineTo(B.x, B.y);
+  ctx.lineTo(C.x, C.y);
+  ctx.closePath();
+  ctx.fillStyle = 'rgba(0,207,255,0.04)';
+  ctx.fill();
+
+  // Right angle box
+  const bs = 14;
+  ctx.strokeStyle = '#3a3a6a';
+  ctx.lineWidth = 1.5;
+  ctx.strokeRect(A.x, A.y - bs, bs, bs);
+
+  // Draw sides
+  function drawSide(x1, y1, x2, y2, color, lw) {
+    ctx.strokeStyle = color;
+    ctx.lineWidth = lw;
+    ctx.lineCap = 'round';
+    ctx.beginPath();
+    ctx.moveTo(x1, y1);
+    ctx.lineTo(x2, y2);
+    ctx.stroke();
+  }
+
+  drawSide(A.x, A.y, B.x, B.y, '#39ff14', 3);   // adjacent (green)
+  drawSide(A.x, A.y, C.x, C.y, '#ff2d78', 3);   // opposite (red)
+  drawSide(B.x, B.y, C.x, C.y, '#00cfff', 3.5); // hypotenuse (blue)
+
+  // Angle arc at B — REMOVED
+  const arcR = 36;
+  const otherDeg = 90 - deg;
+
+  // Labels — font
+  ctx.font = '14px Share Tech Mono';
+  ctx.textAlign = 'center';
+
+  // Adjacent label (bottom)
+  ctx.fillStyle = '#39ff14';
+  const adjMidX = (A.x + B.x) / 2;
+  ctx.fillText(snap ? SPECIAL[snap].adj : fmt(adjN), adjMidX, A.y + 22);
+
+  // Opposite label (left side)
+  ctx.fillStyle = '#ff2d78';
+  const oppMidY = (A.y + C.y) / 2;
+  ctx.save();
+  ctx.translate(A.x - 22, oppMidY);
+  ctx.rotate(-Math.PI / 2);
+  ctx.fillText(snap ? SPECIAL[snap].opp : fmt(oppN), 0, 0);
+  ctx.restore();
+
+  // Hypotenuse label — centered above (outside) the hyp line
+  ctx.fillStyle = '#00cfff';
+  const hypMidX = (B.x + C.x) / 2;
+  const hypMidY = (B.y + C.y) / 2;
+  const hypDX = C.x - B.x, hypDY = C.y - B.y;
+  const hypLen = Math.sqrt(hypDX*hypDX + hypDY*hypDY);
+  // Outward perpendicular (away from interior corner A)
+  const perpX = -hypDY / hypLen;
+  const perpY =  hypDX / hypLen;
+  let hypAngle = Math.atan2(hypDY, hypDX);
+  // Keep text right-side-up
+  if (hypAngle < -Math.PI/2 || hypAngle > Math.PI/2) hypAngle += Math.PI;
+  ctx.save();
+  ctx.translate(hypMidX + perpX * 16, hypMidY + perpY * 16);
+  ctx.rotate(hypAngle);
+  ctx.textAlign = 'center';
+  ctx.fillText(snap ? SPECIAL[snap].hyp : fmt(1), 0, 4);
+  ctx.restore();
+
+  // Angle label at B
+  ctx.fillStyle = '#ffe600';
+  ctx.font = 'bold 14px Share Tech Mono';
+  ctx.fillText(`${Math.round(deg)}°`, B.x - arcR - 18, B.y - 8);
+
+  // Other angle label at C
+  ctx.fillStyle = '#ffffff';
+  ctx.font = '12px Share Tech Mono';
+  ctx.fillText(`${Math.round(otherDeg)}°`, C.x + 22, C.y + 22);
+
+  // 90° label
+  ctx.fillStyle = '#ffffff';
+  ctx.font = '11px Share Tech Mono';
+  ctx.fillText('90°', A.x + 24, A.y - 4);
+
+  // Update panel
+  const d = snap ? SPECIAL[snap] : null;
+  canvas.classList.toggle('snapped', !!snap);
+  document.getElementById('sliderVal').textContent = Math.round(deg) + '°';
+  document.getElementById('angleVal').textContent = Math.round(deg) + '°';
+  document.getElementById('radVal').textContent = d ? d.rad + ' radians' : (deg * Math.PI / 180).toFixed(3) + ' rad';
+  document.getElementById('typeBadge').textContent = d ? d.type : Math.round(deg) + ' – ' + (90 - Math.round(deg)) + ' – 90';
+  document.getElementById('hypVal').textContent = d ? d.hyp : '1';
+  document.getElementById('oppVal').textContent = d ? d.opp : fmt(oppN);
+  document.getElementById('adjVal').textContent = d ? d.adj : fmt(adjN);
+  document.getElementById('sinVal').textContent = d ? d.sin : fmt(Math.sin(rad));
+  document.getElementById('cosVal').textContent = d ? d.cos : fmt(Math.cos(rad));
+  document.getElementById('tanVal').textContent = d ? d.tan : fmt(Math.tan(rad));
+  if (d) document.getElementById('memTip').innerHTML = d.tip.replace(/\n/g, '<br>');
+
+  // Highlight snap buttons
+  document.querySelectorAll('.snap-btn').forEach(b => {
+    b.classList.toggle('active', parseInt(b.textContent) === snap);
+  });
+}
+
+function snapTo(deg) {
+  slider.value = deg;
+  draw(deg);
+}
+
+slider.addEventListener('input', () => draw(parseFloat(slider.value)));
+
+// Resize
+const ro = new ResizeObserver(() => draw(parseFloat(slider.value)));
+ro.observe(canvas);
+
+draw(45);
+</script>
+</body>
+</html>
+" style="width:100%;height:600px;border:none;display:block;"></iframe></div>
+</section>
+<section id="section-whack-a-mole" class="tool-section">
+  <div class="tool-topbar">
+    <div class="ttb-left">
+      <button class="back-btn-tool" onclick="goHome()">&#8592; Missions</button>
+      <span class="ttb-name">Trig Whack-a-Mole</span>
+    </div>
+    <div class="ttb-right">
+      <span class="type-pill scored-pill">scored</span>
+      <span class="live-score" id="score-whack-a-mole"></span>
+      <button class="done-btn" onclick="markDone('whack-a-mole')">&#10003; Done &amp; Return</button>
+    </div>
+  </div>
+  <div id="wm-root" style="width:100%;"><iframe id="wm-iframe" srcdoc="<!DOCTYPE html>
+<html lang=&quot;en&quot;>
+<head>
+<meta charset=&quot;UTF-8&quot;>
+<meta name=&quot;viewport&quot; content=&quot;width=device-width, initial-scale=1.0&quot;>
+<title>Trig Whack-a-Mole</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&amp;family=VT323&amp;display=swap');
+
+  :root {
+    --bg: #0d0d1a;
+    --grid-bg: #111122;
+    --hole: #07070f;
+    --neon-green: #39ff14;
+    --neon-pink: #ff2d78;
+    --neon-yellow: #ffe600;
+    --neon-blue: #00cfff;
+    --neon-orange: #ff6a00;
+    --text: #e8e8ff;
+    --muted: #555577;
+    --correct: #39ff14;
+    --wrong: #ff2d78;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Press Start 2P', monospace;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    overflow-x: hidden;
+    background-image:
+      linear-gradient(rgba(57,255,20,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(57,255,20,0.03) 1px, transparent 1px);
+    background-size: 32px 32px;
+  }
+
+  /* Scanline overlay */
+  body::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background: repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 2px,
+      rgba(0,0,0,0.08) 2px,
+      rgba(0,0,0,0.08) 4px
+    );
+    pointer-events: none;
+    z-index: 100;
+  }
+
+  header {
+    width: 100%;
+    max-width: 720px;
+    padding: 28px 24px 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .title {
+    font-size: 1.4rem;
+    color: var(--neon-green);
+    text-shadow: 0 0 10px var(--neon-green), 0 0 30px rgba(57,255,20,0.4);
+    letter-spacing: 0.05em;
+    text-align: center;
+  }
+
+  .subtitle {
+    font-family: 'VT323', monospace;
+    font-size: 1.1rem;
+    color: var(--neon-blue);
+    letter-spacing: 0.1em;
+  }
+
+  .hud {
+    width: 100%;
+    max-width: 720px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 24px 0;
+    gap: 12px;
+  }
+
+  .hud-box {
+    background: rgba(0,0,0,0.5);
+    border: 2px solid var(--muted);
+    padding: 10px 16px;
+    text-align: center;
+    flex: 1;
+  }
+
+  .hud-box .hud-label {
+    font-size: 0.45rem;
+    color: var(--muted);
+    margin-bottom: 6px;
+    letter-spacing: 0.1em;
+  }
+
+  .hud-box .hud-val {
+    font-family: 'VT323', monospace;
+    font-size: 2rem;
+    line-height: 1;
+  }
+
+  #scoreVal { color: var(--neon-yellow); text-shadow: 0 0 8px var(--neon-yellow); }
+  #livesVal { color: var(--neon-pink); text-shadow: 0 0 8px var(--neon-pink); }
+  #timerVal { color: var(--neon-blue); text-shadow: 0 0 8px var(--neon-blue); }
+  #levelVal { color: var(--neon-green); text-shadow: 0 0 8px var(--neon-green); }
+
+  .question-area {
+    width: 100%;
+    max-width: 720px;
+    padding: 20px 24px 0;
+    text-align: center;
+  }
+
+  .question-label {
+    font-size: 0.5rem;
+    color: var(--muted);
+    letter-spacing: 0.15em;
+    margin-bottom: 10px;
+  }
+
+  .question-text {
+    font-family: 'VT323', monospace;
+    font-size: 2.8rem;
+    color: var(--neon-yellow);
+    text-shadow: 0 0 12px var(--neon-yellow), 0 0 30px rgba(255,230,0,0.3);
+    min-height: 3.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: opacity 0.15s;
+  }
+
+  .game-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    padding: 24px;
+    width: 100%;
+    max-width: 720px;
+  }
+
+  .hole-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0;
+    position: relative;
+  }
+
+  .mole-container {
+    width: 100%;
+    height: 110px;
+    position: relative;
+    overflow: hidden;
+    cursor: pointer;
+  }
+
+  .mole {
+    position: absolute;
+    bottom: -110px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100%;
+    background: #1a1a2e;
+    border: 3px solid var(--muted);
+    border-bottom: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100px;
+    transition: bottom 0.18s cubic-bezier(0.34, 1.56, 0.64, 1);
+    font-family: 'VT323', monospace;
+    font-size: 1.8rem;
+    color: var(--text);
+    user-select: none;
+    border-radius: 6px 6px 0 0;
+  }
+
+  .mole.up {
+    bottom: 0;
+  }
+
+  .mole.correct {
+    background: rgba(57,255,20,0.15);
+    border-color: var(--neon-green);
+    color: var(--neon-green);
+    text-shadow: 0 0 10px var(--neon-green);
+  }
+
+  .mole.wrong {
+    background: rgba(255,45,120,0.15);
+    border-color: var(--neon-pink);
+    color: var(--neon-pink);
+    text-shadow: 0 0 10px var(--neon-pink);
+  }
+
+  .mole.whacked {
+    animation: whack 0.25s ease-out forwards;
+  }
+
+  @keyframes whack {
+    0% { transform: translateX(-50%) scale(1); }
+    30% { transform: translateX(-50%) scale(1.3) rotate(-8deg); }
+    100% { transform: translateX(-50%) scale(0.1) rotate(20deg); opacity: 0; }
+  }
+
+  .hole-dirt {
+    width: 100%;
+    height: 22px;
+    background: #1a0e05;
+    border: 3px solid #3a2010;
+    border-radius: 0 0 50% 50% / 0 0 12px 12px;
+    position: relative;
+    z-index: 2;
+  }
+
+  .hit-label {
+    position: absolute;
+    top: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-family: 'VT323', monospace;
+    font-size: 1.6rem;
+    pointer-events: none;
+    opacity: 0;
+    white-space: nowrap;
+  }
+
+  .hit-label.show-correct {
+    color: var(--neon-green);
+    text-shadow: 0 0 10px var(--neon-green);
+    animation: floatUp 0.7s ease-out forwards;
+  }
+
+  .hit-label.show-wrong {
+    color: var(--neon-pink);
+    text-shadow: 0 0 10px var(--neon-pink);
+    animation: floatUp 0.7s ease-out forwards;
+  }
+
+  @keyframes floatUp {
+    0% { opacity: 1; transform: translateX(-50%) translateY(0); }
+    100% { opacity: 0; transform: translateX(-50%) translateY(-50px); }
+  }
+
+  /* Screen flash */
+  .flash {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 99;
+    opacity: 0;
+  }
+  .flash.correct-flash { background: var(--neon-green); animation: flash 0.2s ease-out; }
+  .flash.wrong-flash { background: var(--neon-pink); animation: flash 0.2s ease-out; }
+  @keyframes flash { 0% { opacity: 0.18; } 100% { opacity: 0; } }
+
+  .controls {
+    display: flex;
+    gap: 16px;
+    padding: 0 24px 28px;
+  }
+
+  .btn {
+    font-family: 'Press Start 2P', monospace;
+    font-size: 0.55rem;
+    padding: 12px 20px;
+    border: 3px solid;
+    background: transparent;
+    cursor: pointer;
+    letter-spacing: 0.08em;
+    transition: all 0.1s;
+    text-transform: uppercase;
+  }
+
+  .btn-start {
+    color: var(--neon-green);
+    border-color: var(--neon-green);
+    box-shadow: 0 0 10px rgba(57,255,20,0.3);
+  }
+  .btn-start:hover {
+    background: rgba(57,255,20,0.12);
+    box-shadow: 0 0 20px rgba(57,255,20,0.5);
+  }
+
+  .btn-stop {
+    color: var(--neon-pink);
+    border-color: var(--neon-pink);
+  }
+  .btn-stop:hover { background: rgba(255,45,120,0.1); }
+
+  /* Overlay screens */
+  .overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.88);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 24px;
+    z-index: 200;
+    text-align: center;
+    padding: 24px;
+  }
+
+  .overlay.hidden { display: none; }
+
+  .overlay-title {
+    font-size: 1.6rem;
+    text-shadow: 0 0 20px currentColor;
+    line-height: 1.4;
+  }
+
+  .overlay-score {
+    font-family: 'VT323', monospace;
+    font-size: 3rem;
+    color: var(--neon-yellow);
+    text-shadow: 0 0 16px var(--neon-yellow);
+  }
+
+  .overlay-sub {
+    font-family: 'VT323', monospace;
+    font-size: 1.4rem;
+    color: var(--muted);
+  }
+
+  .difficulty-row {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .diff-btn {
+    font-family: 'Press Start 2P', monospace;
+    font-size: 0.5rem;
+    padding: 10px 16px;
+    border: 2px solid var(--muted);
+    background: transparent;
+    color: var(--text);
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+
+  .diff-btn:hover, .diff-btn.active {
+    border-color: var(--neon-blue);
+    color: var(--neon-blue);
+    box-shadow: 0 0 12px rgba(0,207,255,0.3);
+  }
+</style>
+</head>
+<body>
+
+<div class=&quot;flash&quot; id=&quot;flash&quot;></div>
+
+<!-- Start overlay -->
+<div class=&quot;overlay&quot; id=&quot;startOverlay&quot;>
+  <div class=&quot;overlay-title&quot; style=&quot;color:var(--neon-green)&quot;>TRIG<br>WHACK-A-MOLE</div>
+  <div class=&quot;overlay-sub&quot;>Whack the correct trig value before it disappears!</div>
+  <div class=&quot;overlay-sub&quot; style=&quot;color:var(--neon-yellow); font-size:1.23rem;&quot;>Choose difficulty:</div>
+  <div class=&quot;difficulty-row&quot;>
+    <button class=&quot;diff-btn active&quot; onclick=&quot;setDiff('easy')&quot;>EASY<br><span style=&quot;font-size:0.7em;color:var(--muted)&quot;>sin/cos only</span></button>
+    <button class=&quot;diff-btn&quot; onclick=&quot;setDiff('medium')&quot;>MEDIUM<br><span style=&quot;font-size:0.7em;color:var(--muted)&quot;>+ tan</span></button>
+    <button class=&quot;diff-btn&quot; onclick=&quot;setDiff('hard')&quot;>HARD<br><span style=&quot;font-size:0.7em;color:var(--muted)&quot;>all + radians</span></button>
+  </div>
+  <button class=&quot;btn btn-start&quot; onclick=&quot;startGame()&quot;>INSERT COIN</button>
+</div>
+
+<!-- Game Over overlay -->
+<div class=&quot;overlay hidden&quot; id=&quot;gameOverOverlay&quot;>
+  <div class=&quot;overlay-title&quot; style=&quot;color:var(--neon-pink)&quot;>GAME OVER</div>
+  <div class=&quot;overlay-score&quot; id=&quot;finalScore&quot;>0</div>
+  <div class=&quot;overlay-sub&quot; id=&quot;finalMsg&quot;></div>
+  <button class=&quot;btn btn-start&quot; onclick=&quot;resetGame()&quot;>PLAY AGAIN</button>
+</div>
+
+<header>
+  <div class=&quot;title&quot;>TRIG WHACK-A-MOLE</div>
+  <div class=&quot;subtitle&quot;>HIT THE CORRECT VALUE</div>
+</header>
+
+<div class=&quot;hud&quot;>
+  <div class=&quot;hud-box&quot;>
+    <div class=&quot;hud-label&quot;>SCORE</div>
+    <div class=&quot;hud-val&quot; id=&quot;scoreVal&quot;>0</div>
+  </div>
+  <div class=&quot;hud-box&quot;>
+    <div class=&quot;hud-label&quot;>LIVES</div>
+    <div class=&quot;hud-val&quot; id=&quot;livesVal&quot;>♥♥♥</div>
+  </div>
+  <div class=&quot;hud-box&quot;>
+    <div class=&quot;hud-label&quot;>TIME</div>
+    <div class=&quot;hud-val&quot; id=&quot;timerVal&quot;>60</div>
+  </div>
+  <div class=&quot;hud-box&quot;>
+    <div class=&quot;hud-label&quot;>LEVEL</div>
+    <div class=&quot;hud-val&quot; id=&quot;levelVal&quot;>1</div>
+  </div>
+</div>
+
+<div class=&quot;question-area&quot;>
+  <div class=&quot;question-label&quot;>FIND THE VALUE OF:</div>
+  <div class=&quot;question-text&quot; id=&quot;questionText&quot;>—</div>
+</div>
+
+<div class=&quot;game-grid&quot; id=&quot;gameGrid&quot;>
+</div>
+
+<div class=&quot;controls&quot;>
+  <button class=&quot;btn btn-start&quot; onclick=&quot;startGame()&quot;>START</button>
+  <button class=&quot;btn btn-stop&quot; onclick=&quot;resetGame()&quot;>RESET</button>
+</div>
+
+<script>
+// All trig Q&amp;A data
+const QUESTIONS = {
+  easy: [
+    {q:'sin(0°)',      a:'0',      wrong:['1','1/2','√3/2']},
+    {q:'sin(30°)',     a:'1/2',    wrong:['0','√2/2','√3/2']},
+    {q:'sin(45°)',     a:'√2/2',   wrong:['1/2','√3/2','1']},
+    {q:'sin(60°)',     a:'√3/2',   wrong:['1/2','√2/2','1']},
+    {q:'sin(90°)',     a:'1',      wrong:['0','1/2','√3/2']},
+    {q:'cos(0°)',      a:'1',      wrong:['0','1/2','√3/2']},
+    {q:'cos(30°)',     a:'√3/2',   wrong:['1/2','√2/2','1']},
+    {q:'cos(45°)',     a:'√2/2',   wrong:['1/2','√3/2','1']},
+    {q:'cos(60°)',     a:'1/2',    wrong:['0','√2/2','√3/2']},
+    {q:'cos(90°)',     a:'0',      wrong:['1','1/2','√3/2']},
+    {q:'sin(180°)',    a:'0',      wrong:['-1','1/2','-1/2']},
+    {q:'cos(180°)',    a:'-1',     wrong:['0','1','-1/2']},
+    {q:'sin(270°)',    a:'-1',     wrong:['0','1','-1/2']},
+    {q:'cos(270°)',    a:'0',      wrong:['-1','1/2','-1/2']},
+    {q:'sin(360°)',    a:'0',      wrong:['1','-1','1/2']},
+    {q:'cos(360°)',    a:'1',      wrong:['0','-1','1/2']},
+  ],
+  medium: [
+    {q:'tan(0°)',      a:'0',      wrong:['1','undef','-1']},
+    {q:'tan(30°)',     a:'1/√3',   wrong:['√3','1','-1/√3']},
+    {q:'tan(45°)',     a:'1',      wrong:['0','√3','1/√3']},
+    {q:'tan(60°)',     a:'√3',     wrong:['1','1/√3','-√3']},
+    {q:'tan(90°)',     a:'undef',  wrong:['0','1','√3']},
+    {q:'sin(120°)',    a:'√3/2',   wrong:['-√3/2','1/2','-1/2']},
+    {q:'cos(120°)',    a:'-1/2',   wrong:['1/2','√3/2','-√3/2']},
+    {q:'sin(135°)',    a:'√2/2',   wrong:['-√2/2','1/2','-1/2']},
+    {q:'cos(135°)',    a:'-√2/2',  wrong:['√2/2','1/2','-1/2']},
+    {q:'sin(150°)',    a:'1/2',    wrong:['-1/2','√3/2','-√3/2']},
+    {q:'cos(150°)',    a:'-√3/2',  wrong:['√3/2','-1/2','1/2']},
+    {q:'tan(180°)',    a:'0',      wrong:['undef','1','-1']},
+    {q:'tan(135°)',    a:'-1',     wrong:['1','0','√3']},
+    {q:'tan(150°)',    a:'-1/√3',  wrong:['1/√3','-√3','√3']},
+  ],
+  hard: [
+    {q:'sin(π/6)',     a:'1/2',    wrong:['√3/2','√2/2','0']},
+    {q:'cos(π/3)',     a:'1/2',    wrong:['√3/2','0','√2/2']},
+    {q:'sin(π/4)',     a:'√2/2',   wrong:['1/2','√3/2','1']},
+    {q:'cos(π/6)',     a:'√3/2',   wrong:['1/2','√2/2','0']},
+    {q:'tan(π/4)',     a:'1',      wrong:['0','√3','1/√3']},
+    {q:'sin(2π/3)',    a:'√3/2',   wrong:['-√3/2','1/2','-1/2']},
+    {q:'cos(5π/6)',    a:'-√3/2',  wrong:['√3/2','-1/2','1/2']},
+    {q:'sin(7π/6)',    a:'-1/2',   wrong:['1/2','-√3/2','√3/2']},
+    {q:'cos(4π/3)',    a:'-1/2',   wrong:['1/2','-√3/2','√3/2']},
+    {q:'tan(5π/4)',    a:'1',      wrong:['-1','0','√3']},
+    {q:'sin(5π/3)',    a:'-√3/2',  wrong:['√3/2','-1/2','1/2']},
+    {q:'cos(7π/4)',    a:'√2/2',   wrong:['-√2/2','1/2','-1/2']},
+    {q:'sin(11π/6)',   a:'-1/2',   wrong:['1/2','-√3/2','√3/2']},
+    {q:'tan(π/3)',     a:'√3',     wrong:['1','1/√3','-√3']},
+    {q:'cos(3π/2)',    a:'0',      wrong:['-1','1','-1/2']},
+  ],
+};
+
+const HOLES = 6;
+let score = 0, lives = 3, timeLeft = 60, level = 1;
+let currentQ = null, gameRunning = false;
+let moleTimers = [], gameTimer = null, questionTimer = null;
+let difficulty = 'easy';
+let combo = 0;
+
+function setDiff(d) {
+  difficulty = d;
+  document.querySelectorAll('.diff-btn').forEach(b => b.classList.remove('active'));
+  event.target.closest('.diff-btn').classList.add('active');
+}
+
+function buildGrid() {
+  const grid = document.getElementById('gameGrid');
+  grid.innerHTML = '';
+  for (let i = 0; i < HOLES; i++) {
+    const wrap = document.createElement('div');
+    wrap.className = 'hole-wrap';
+    wrap.innerHTML = `
+      <div class=&quot;mole-container&quot; id=&quot;mc${i}&quot;>
+        <div class=&quot;mole&quot; id=&quot;mole${i}&quot; data-idx=&quot;${i}&quot;></div>
+        <div class=&quot;hit-label&quot; id=&quot;hit${i}&quot;></div>
+      </div>
+      <div class=&quot;hole-dirt&quot;></div>
+    `;
+    wrap.querySelector('.mole-container').addEventListener('click', () => whack(i));
+    grid.appendChild(wrap);
+  }
+}
+
+function updateHUD() {
+  document.getElementById('scoreVal').textContent = score;
+  document.getElementById('livesVal').textContent = '♥'.repeat(Math.max(0,lives));
+  document.getElementById('timerVal').textContent = timeLeft;
+  document.getElementById('levelVal').textContent = level;
+}
+
+function getQuestions() {
+  if (difficulty === 'easy') return QUESTIONS.easy;
+  if (difficulty === 'medium') return [...QUESTIONS.easy, ...QUESTIONS.medium];
+  return [...QUESTIONS.easy, ...QUESTIONS.medium, ...QUESTIONS.hard];
+}
+
+function newQuestion() {
+  const pool = getQuestions();
+  currentQ = pool[Math.floor(Math.random() * pool.length)];
+  document.getElementById('questionText').textContent = currentQ.q + ' = ?';
+
+  // Pick 6 values: 1 correct + 5 wrong (sampled)
+  const wrongs = [...currentQ.wrong];
+  // pad with extras if needed
+  const allWrong = ['0','1','-1','1/2','-1/2','√3/2','-√3/2','√2/2','-√2/2','√3','-√3','1/√3','undef'];
+  while (wrongs.length < 5) {
+    const w = allWrong[Math.floor(Math.random() * allWrong.length)];
+    if (w !== currentQ.a &amp;&amp; !wrongs.includes(w)) wrongs.push(w);
+  }
+
+  const vals = shuffle([currentQ.a, ...wrongs.slice(0,5)]);
+  const correctIdx = vals.indexOf(currentQ.a);
+
+  // Reset all moles
+  for (let i = 0; i < HOLES; i++) {
+    const mole = document.getElementById(`mole${i}`);
+    mole.className = 'mole';
+    mole.textContent = vals[i];
+    mole.dataset.correct = (i === correctIdx) ? '1' : '0';
+    mole.dataset.val = vals[i];
+  }
+
+  // Pop moles up with stagger
+  clearMoleTimers();
+  const upDuration = Math.max(1200, 2800 - level * 200);
+
+  for (let i = 0; i < HOLES; i++) {
+    const delay = i * 80;
+    const t1 = setTimeout(() => {
+      const m = document.getElementById(`mole${i}`);
+      m.classList.add('up');
+      m.classList.add(m.dataset.correct === '1' ? 'correct' : 'wrong');
+    }, delay);
+
+    const t2 = setTimeout(() => {
+      const m = document.getElementById(`mole${i}`);
+      if (!m.classList.contains('whacked')) {
+        m.classList.remove('up');
+      }
+    }, delay + upDuration);
+
+    moleTimers.push(t1, t2);
+  }
+
+  // Next question after moles go down
+  const nextDelay = upDuration + HOLES * 80 + 400;
+  questionTimer = setTimeout(() => {
+    if (gameRunning) newQuestion();
+  }, nextDelay);
+}
+
+function whack(idx) {
+  if (!gameRunning) return;
+  const mole = document.getElementById(`mole${idx}`);
+  if (!mole.classList.contains('up') || mole.classList.contains('whacked')) return;
+
+  mole.classList.add('whacked');
+
+  const isCorrect = mole.dataset.correct === '1';
+  const hitLabel = document.getElementById(`hit${idx}`);
+  hitLabel.className = 'hit-label';
+
+  if (isCorrect) {
+    combo++;
+    const pts = 100 * combo;
+    score += pts;
+    hitLabel.textContent = combo > 1 ? `+${pts} x${combo}!` : `+${pts}`;
+    hitLabel.className = 'hit-label show-correct';
+    triggerFlash('correct');
+    if (score > 0 &amp;&amp; score % 500 === 0) levelUp();
+  } else {
+    combo = 0;
+    lives--;
+    hitLabel.textContent = '✗ WRONG';
+    hitLabel.className = 'hit-label show-wrong';
+    triggerFlash('wrong');
+    if (lives <= 0) { endGame(); return; }
+  }
+
+  updateHUD();
+
+  setTimeout(() => { hitLabel.className = 'hit-label'; }, 800);
+
+  // Clear question timer and move on
+  clearTimeout(questionTimer);
+  setTimeout(() => {
+    if (gameRunning) {
+      // Hide all remaining moles
+      for (let i = 0; i < HOLES; i++) {
+        const m = document.getElementById(`mole${i}`);
+        m.classList.remove('up');
+      }
+      setTimeout(() => { if (gameRunning) newQuestion(); }, 300);
+    }
+  }, 400);
+}
+
+function levelUp() {
+  level++;
+  updateHUD();
+}
+
+function triggerFlash(type) {
+  const f = document.getElementById('flash');
+  f.className = 'flash';
+  void f.offsetWidth;
+  f.className = `flash ${type}-flash`;
+}
+
+function clearMoleTimers() {
+  moleTimers.forEach(clearTimeout);
+  moleTimers = [];
+  clearTimeout(questionTimer);
+}
+
+function startGame() {
+  document.getElementById('startOverlay').classList.add('hidden');
+  score = 0; lives = 3; timeLeft = 60; level = 1; combo = 0;
+  gameRunning = true;
+  buildGrid();
+  updateHUD();
+  newQuestion();
+
+  gameTimer = setInterval(() => {
+    timeLeft--;
+    updateHUD();
+    if (timeLeft <= 0) endGame();
+  }, 1000);
+}
+
+function endGame() {
+  gameRunning = false;
+  clearMoleTimers();
+  clearInterval(gameTimer);
+
+  const msgs = [
+    score >= 2000 ? 'TRIG MASTER! 🔥' :
+    score >= 1000 ? 'SOLID WORK!' :
+    score >= 500  ? 'KEEP PRACTICING!' : 'STUDY MORE TRIG!'
+  ];
+
+  document.getElementById('finalScore').textContent = score + ' PTS';
+  document.getElementById('finalMsg').textContent = msgs[0];
+  document.getElementById('gameOverOverlay').classList.remove('hidden');
+  try { window.parent.postMessage({tool:'whack-a-mole', score: score, level: level}, '*'); } catch(e) {}
+}
+
+function resetGame() {
+  gameRunning = false;
+  clearMoleTimers();
+  clearInterval(gameTimer);
+  score = 0; lives = 3; timeLeft = 60; level = 1; combo = 0;
+  document.getElementById('gameOverOverlay').classList.add('hidden');
+  document.getElementById('questionText').textContent = '—';
+  buildGrid();
+  updateHUD();
+  document.getElementById('startOverlay').classList.remove('hidden');
+  try { window.parent.postMessage({tool:'whack-a-mole', score: 0, level: 1}, '*'); } catch(err) {}
+}
+
+function shuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+buildGrid();
+updateHUD();
+
+window.addEventListener('message', function(e) {
+  if (e.data === 'requestScore') {
+    try { window.parent.postMessage({tool:'whack-a-mole', score: score, level: level}, '*'); } catch(err) {}
+  }
+});
+</script>
+</body>
+</html>
+" style="width:100%;height:700px;border:none;display:block;"></iframe></div>
+</section>
+<section id="section-navigation-map" class="tool-section">
+  <div class="tool-topbar">
+    <div class="ttb-left">
+      <button class="back-btn-tool" onclick="goHome()">&#8592; Missions</button>
+      <span class="ttb-name">Trig Navigation</span>
+    </div>
+    <div class="ttb-right">
+      <span class="type-pill scored-pill">scored</span>
+      <span class="live-score" id="score-navigation-map"></span>
+      <button class="done-btn" onclick="markDone('navigation-map')">&#10003; Done &amp; Return</button>
+    </div>
+  </div>
+  <div id="nm-root" style="width:100%;"><iframe id="nm-iframe" srcdoc="<!DOCTYPE html>
+<html lang=&quot;en&quot;>
+<head>
+<meta charset=&quot;UTF-8&quot;>
+<meta name=&quot;viewport&quot; content=&quot;width=device-width, initial-scale=1.0&quot;>
+<title>Trig Navigation</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=VT323&amp;family=Share+Tech+Mono&amp;display=swap');
+
+:root {
+  --bg:      #0a0a0f;
+  --surface: #0f0f1a;
+  --border:  #2a2a4a;
+  --ink:     #e8e8ff;
+  --muted:   #5a5a8a;
+  --green:   #39ff14;
+  --blue:    #00cfff;
+  --pink:    #ff2d78;
+  --yellow:  #ffe600;
+  --grid:    rgba(0,207,255,0.06);
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: 'Share Tech Mono', monospace;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background-image:
+    linear-gradient(var(--grid) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+  background-size: 28px 28px;
+}
+
+body::after {
+  content: '';
+  position: fixed; inset: 0;
+  background: repeating-linear-gradient(
+    0deg, transparent, transparent 2px,
+    rgba(0,0,0,0.07) 2px, rgba(0,0,0,0.07) 4px
+  );
+  pointer-events: none;
+  z-index: 100;
+}
+
+header {
+  width: 100%; max-width: 1000px;
+  padding: 24px 40px 14px;
+  border-bottom: 2px solid var(--border);
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+}
+
+h1 {
+  font-family: 'VT323', monospace;
+  font-size: 2.4rem;
+  color: var(--green);
+  text-shadow: 0 0 12px var(--green), 0 0 30px rgba(57,255,20,0.3);
+  line-height: 1;
+}
+h1 span { color: var(--blue); text-shadow: 0 0 12px var(--blue); }
+
+.header-sub {
+  font-size: 0.65rem;
+  color: var(--muted);
+  text-align: right;
+  line-height: 1.8;
+}
+
+.main {
+  width: 100%; max-width: 1000px;
+  padding: 24px 40px;
+  display: flex;
+  gap: 28px;
+  align-items: flex-start;
+}
+
+.map-col {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+#mapCanvas {
+  background: #080810;
+  border: 1.5px solid var(--border);
+  border-radius: 2px;
+  display: block;
+  width: 100%;
+}
+
+.side-col {
+  width: 260px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.panel-label {
+  font-size: 0.58rem;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  color: var(--muted);
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 6px;
+  margin-bottom: 4px;
+}
+
+/* Cards */
+.mission-card, .stats-card, .answer-area, .trig-ref {
+  background: var(--surface);
+  border: 1.5px solid var(--border);
+}
+
+.mission-card {
+  border-left: 4px solid var(--yellow);
+  padding: 14px 16px;
+}
+.mission-num {
+  font-family: 'VT323', monospace;
+  font-size: 0.75rem;
+  color: var(--yellow);
+  text-shadow: 0 0 6px var(--yellow);
+  letter-spacing: 0.15em;
+  margin-bottom: 6px;
+}
+.mission-text { font-size: 0.72rem; line-height: 1.8; }
+.mission-text strong { color: var(--yellow); }
+
+.stats-card { padding: 12px 14px; }
+.stat-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  padding: 5px 0;
+  border-bottom: 1px solid var(--border);
+  font-size: 0.7rem;
+}
+.stat-row:last-child { border-bottom: none; }
+.stat-label { color: var(--muted); }
+
+.answer-area {
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.choices-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.choice-btn {
+  font-family: 'VT323', monospace;
+  font-size: 1.3rem;
+  padding: 10px 8px;
+  border: 1.5px solid var(--border);
+  background: var(--surface);
+  color: var(--ink);
+  cursor: pointer;
+  border-radius: 2px;
+  transition: all 0.15s;
+  text-align: center;
+  line-height: 1;
+}
+.choice-btn:hover:not([disabled]) {
+  border-color: var(--blue);
+  color: var(--blue);
+  box-shadow: 0 0 8px rgba(0,207,255,0.2);
+}
+.choice-btn.correct-choice {
+  border-color: var(--green) !important;
+  background: rgba(57,255,20,0.12) !important;
+  color: var(--green) !important;
+  box-shadow: 0 0 10px rgba(57,255,20,0.3);
+}
+.choice-btn.wrong-choice {
+  border-color: var(--pink) !important;
+  background: rgba(255,45,120,0.1) !important;
+  color: var(--pink) !important;
+}
+
+.btn {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.7rem;
+  padding: 8px 14px;
+  border: 1.5px solid;
+  background: transparent;
+  cursor: pointer;
+  border-radius: 2px;
+  transition: all 0.15s;
+  white-space: nowrap;
+}
+.btn-next { color: var(--blue); border-color: var(--blue); }
+.btn-next:hover { background: rgba(0,207,255,0.1); }
+.btn-hint { color: var(--muted); border-color: var(--border); font-size: 0.65rem; }
+.btn-hint:hover { color: var(--yellow); border-color: var(--yellow); }
+
+.nav-row { display: flex; gap: 8px; }
+
+.feedback { font-size: 0.7rem; min-height: 1.2rem; line-height: 1.6; }
+.feedback.correct { color: var(--green); text-shadow: 0 0 6px var(--green); }
+.feedback.wrong   { color: var(--pink); }
+
+.hint-box {
+  background: rgba(255,230,0,0.05);
+  border: 1.5px solid rgba(255,230,0,0.3);
+  padding: 10px 14px;
+  font-size: 0.65rem;
+  color: var(--yellow);
+  line-height: 1.8;
+  display: none;
+}
+.hint-box.visible { display: block; }
+
+.score-bar {
+  display: flex;
+  justify-content: space-between;
+  background: var(--surface);
+  border: 1.5px solid var(--border);
+  padding: 10px 14px;
+}
+.score-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+.sc-label { font-size: 0.55rem; color: var(--muted); letter-spacing: 0.1em; }
+.sc-val   { font-family: 'VT323', monospace; font-size: 1.6rem; line-height: 1; }
+
+.trig-ref {
+  border-left: 4px solid var(--blue);
+  padding: 12px 14px;
+  font-size: 0.65rem;
+  color: var(--muted);
+  line-height: 2;
+}
+.trig-ref strong { color: var(--blue); display: block; margin-bottom: 2px; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Trig <span>Navigation</span></h1>
+  <div class=&quot;header-sub&quot;></div>
+</header>
+
+<div class=&quot;main&quot;>
+  <div class=&quot;map-col&quot;>
+    <canvas id=&quot;mapCanvas&quot; height=&quot;420&quot;></canvas>
+    <div class=&quot;score-bar&quot;>
+      <div class=&quot;score-item&quot;>
+        <span class=&quot;sc-label&quot;>SCORE</span>
+        <span class=&quot;sc-val&quot; id=&quot;scoreVal&quot; style=&quot;color:var(--yellow)&quot;>0</span>
+      </div>
+      <div class=&quot;score-item&quot;>
+        <span class=&quot;sc-label&quot;>CORRECT</span>
+        <span class=&quot;sc-val&quot; id=&quot;correctVal&quot; style=&quot;color:var(--green)&quot;>0</span>
+      </div>
+      <div class=&quot;score-item&quot;>
+        <span class=&quot;sc-label&quot;>ATTEMPTS</span>
+        <span class=&quot;sc-val&quot; id=&quot;attemptsVal&quot; style=&quot;color:var(--blue)&quot;>0</span>
+      </div>
+      <div class=&quot;score-item&quot;>
+        <span class=&quot;sc-label&quot;>MISSION</span>
+        <span class=&quot;sc-val&quot; id=&quot;missionNumVal&quot; style=&quot;color:var(--pink)&quot;>1/8</span>
+      </div>
+    </div>
+  </div>
+
+  <div class=&quot;side-col&quot;>
+    <div class=&quot;mission-card&quot;>
+      <div class=&quot;mission-num&quot; id=&quot;missionLabel&quot;>MISSION 01</div>
+      <div class=&quot;mission-text&quot; id=&quot;missionText&quot;>Loading...</div>
+    </div>
+
+    <div class=&quot;stats-card&quot;>
+      <div class=&quot;panel-label&quot;>Measurements</div>
+      <div class=&quot;stat-row&quot;>
+        <span class=&quot;stat-label&quot;>Horizontal</span>
+        <span class=&quot;stat-val&quot; id=&quot;horizVal&quot; style=&quot;color:var(--green)&quot;>—</span>
+      </div>
+      <div class=&quot;stat-row&quot;>
+        <span class=&quot;stat-label&quot;>Vertical</span>
+        <span class=&quot;stat-val&quot; id=&quot;vertVal&quot; style=&quot;color:var(--pink)&quot;>—</span>
+      </div>
+      <div class=&quot;stat-row&quot;>
+        <span class=&quot;stat-label&quot;>Hypotenuse</span>
+        <span class=&quot;stat-val&quot; id=&quot;directVal&quot; style=&quot;color:var(--blue)&quot;>—</span>
+      </div>
+      <div class=&quot;stat-row&quot;>
+        <span class=&quot;stat-label&quot;>Direction</span>
+        <span class=&quot;stat-val&quot; id=&quot;bearingVal&quot; style=&quot;color:var(--yellow)&quot;>—</span>
+      </div>
+    </div>
+
+    <div class=&quot;answer-area&quot;>
+      <div class=&quot;panel-label&quot;>Choose the correct answer</div>
+      <div class=&quot;choices-grid&quot; id=&quot;choicesGrid&quot;></div>
+      <div class=&quot;feedback&quot; id=&quot;feedback&quot;></div>
+      <div class=&quot;hint-box&quot; id=&quot;hintBox&quot;></div>
+      <div class=&quot;nav-row&quot;>
+        <button class=&quot;btn btn-hint&quot; onclick=&quot;showHint()&quot;>HINT</button>
+        <button class=&quot;btn btn-next&quot; onclick=&quot;nextMission()&quot;>NEXT &amp;rarr;</button>
+      </div>
+    </div>
+
+    <div class=&quot;trig-ref&quot;>
+      <strong>Quick Reference</strong>
+      sin &amp;theta; = opp / hyp &amp;rarr; opp = hyp &amp;times; sin &amp;theta;<br>
+      cos &amp;theta; = adj / hyp &amp;rarr; adj = hyp &amp;times; cos &amp;theta;<br>
+      tan &amp;theta; = opp / adj
+    </div>
+  </div>
+</div>
+
+<script>
+// ── Exact value table ─────────────────────────────────────────────────────────
+// EXACT[trig+angle][hyp] where hyp index 1–4
+var EXACT = {
+  sin30: ['', '1/2',   '1',     '3/2',    '2'   ],
+  cos30: ['', '√3/2',  '√3',    '3√3/2',  '2√3' ],
+  sin45: ['', '√2/2',  '√2',    '3√2/2',  '2√2' ],
+  cos45: ['', '√2/2',  '√2',    '3√2/2',  '2√2' ],
+  sin60: ['', '√3/2',  '√3',    '3√3/2',  '2√3' ],
+  cos60: ['', '1/2',   '1',     '3/2',    '2'   ]
+};
+
+function ev(trig, angle, hyp) {
+  var row = EXACT[trig + angle];
+  return row ? row[hyp] : '?';
+}
+
+// Pool of all unique exact values (for wrong choices)
+var VALUE_POOL = (function () {
+  var seen = {}, out = [];
+  ['sin', 'cos'].forEach(function (t) {
+    [30, 45, 60].forEach(function (a) {
+      [1, 2, 3, 4].forEach(function (h) {
+        var v = ev(t, a, h);
+        if (v &amp;&amp; v !== '?' &amp;&amp; !seen[v]) { seen[v] = true; out.push(v); }
+      });
+    });
+  });
+  return out;
+}());
+
+function shuffle(arr) {
+  var a = arr.slice();
+  for (var i = a.length - 1; i > 0; i--) {
+    var j = Math.floor(Math.random() * (i + 1));
+    var t = a[i]; a[i] = a[j]; a[j] = t;
+  }
+  return a;
+}
+
+function makeChoices(correct) {
+  var wrong = shuffle(VALUE_POOL.filter(function (v) { return v !== correct; }));
+  return shuffle([correct, wrong[0], wrong[1], wrong[2]]);
+}
+
+// ── Missions ──────────────────────────────────────────────────────────────────
+// ask: 'vert' → find vertical leg (sin), 'horiz' → find horizontal leg (cos)
+var MISSIONS = [
+  { id:1, quadrant:'NE', angle:30, hyp:2, ask:'vert',
+    text:'Ship sails <strong>Northeast: 2 units at 30°</strong>.<br>Find the <strong>North distance</strong>.',
+    hint:'North = 2 × sin(30°) = 2 × 1/2', solution:'2 × sin(30°) = 1 unit North' },
+  { id:2, quadrant:'NW', angle:30, hyp:3, ask:'horiz',
+    text:'Ship sails <strong>Northwest: 3 units at 30°</strong>.<br>Find the <strong>West distance</strong>.',
+    hint:'West = 3 × cos(30°) = 3 × √3/2', solution:'3 × cos(30°) = 3√3/2 units West' },
+  { id:3, quadrant:'NE', angle:45, hyp:4, ask:'vert',
+    text:'Ship sails <strong>Northeast: 4 units at 45°</strong>.<br>Find the <strong>North distance</strong>.',
+    hint:'North = 4 × sin(45°) = 4 × √2/2', solution:'4 × sin(45°) = 2√2 units North' },
+  { id:4, quadrant:'SE', angle:45, hyp:2, ask:'vert',
+    text:'Ship sails <strong>Southeast: 2 units at 45°</strong>.<br>Find the <strong>South distance</strong>.',
+    hint:'South = 2 × sin(45°) = 2 × √2/2', solution:'2 × sin(45°) = √2 units South' },
+  { id:5, quadrant:'SW', angle:60, hyp:4, ask:'horiz',
+    text:'Ship sails <strong>Southwest: 4 units at 60°</strong>.<br>Find the <strong>West distance</strong>.',
+    hint:'West = 4 × cos(60°) = 4 × 1/2', solution:'4 × cos(60°) = 2 units West' },
+  { id:6, quadrant:'SW', angle:30, hyp:3, ask:'vert',
+    text:'Ship sails <strong>Southwest: 3 units at 30°</strong>.<br>Find the <strong>South distance</strong>.',
+    hint:'South = 3 × sin(30°) = 3 × 1/2', solution:'3 × sin(30°) = 3/2 units South' },
+  { id:7, quadrant:'SE', angle:30, hyp:4, ask:'horiz',
+    text:'Ship sails <strong>Southeast: 4 units at 30°</strong>.<br>Find the <strong>East distance</strong>.',
+    hint:'East = 4 × cos(30°) = 4 × √3/2', solution:'4 × cos(30°) = 2√3 units East' },
+  { id:8, quadrant:'NW', angle:60, hyp:2, ask:'vert',
+    text:'Ship sails <strong>Northwest: 2 units at 60°</strong>.<br>Find the <strong>North distance</strong>.',
+    hint:'North = 2 × sin(60°) = 2 × √3/2', solution:'2 × sin(60°) = √3 units North' }
+].map(function (m) {
+  var trig = m.ask === 'vert' ? 'sin' : 'cos';
+  m.answer  = ev(trig, m.angle, m.hyp);
+  m.choices = makeChoices(m.answer);
+  return m;
+});
+
+// ── State ─────────────────────────────────────────────────────────────────────
+var score = 0, correct = 0, attempts = 0;
+var currentMission = 0;
+var hintShown = false;
+var answered  = false;
+
+// ── Canvas ────────────────────────────────────────────────────────────────────
+var canvas = document.getElementById('mapCanvas');
+var ctx    = canvas.getContext('2d');
+
+function drawMap(m) {
+  var W = canvas.offsetWidth || 560;
+  canvas.width = W;
+  var H = canvas.height;
+  ctx.clearRect(0, 0, W, H);
+
+  var signX = (m.quadrant === 'NE' || m.quadrant === 'SE') ?  1 : -1;
+  var signY = (m.quadrant === 'NE' || m.quadrant === 'NW') ?  1 : -1;
+  var aRad  = m.angle * Math.PI / 180;
+  var pad   = 95;
+  var vizHyp = 140;
+
+  // Origin corner depends on quadrant
+  var OX = signX > 0 ? pad     : W - pad;
+  var OY = signY > 0 ? H - pad : pad;
+
+  var EX = OX + Math.cos(aRad) * signX * vizHyp;
+  var EY = OY - Math.sin(aRad) * signY * vizHyp;
+
+  // ── Grid ──
+  ctx.strokeStyle = 'rgba(42,42,74,0.5)';
+  ctx.lineWidth = 1;
+  for (var x = OX % 40; x < W; x += 40) {
+    ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, H); ctx.stroke();
+  }
+  for (var y = OY % 40; y < H; y += 40) {
+    ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(W, y); ctx.stroke();
+  }
+
+  // ── Compass rose ──
+  var crx = W / 2, cry = H / 2, crr = 22;
+  ctx.fillStyle = 'rgba(8,8,18,0.92)';
+  ctx.beginPath(); ctx.arc(crx, cry, crr + 7, 0, Math.PI * 2); ctx.fill();
+  ctx.strokeStyle = '#2a2a4a'; ctx.lineWidth = 1;
+  ctx.beginPath(); ctx.arc(crx, cry, crr + 7, 0, Math.PI * 2); ctx.stroke();
+  [['N',0,-1],['E',1,0],['S',0,1],['W',-1,0]].forEach(function (d) {
+    var lbl = d[0], dx = d[1], dy = d[2], isN = lbl === 'N';
+    ctx.strokeStyle = isN ? '#39ff14' : '#3a3a6a';
+    ctx.lineWidth   = isN ? 2 : 1;
+    ctx.beginPath(); ctx.moveTo(crx+dx*7, cry+dy*7); ctx.lineTo(crx+dx*crr, cry+dy*crr); ctx.stroke();
+    ctx.fillStyle  = isN ? '#39ff14' : '#5a5a8a';
+    ctx.font       = (isN ? 'bold ' : '') + '10px Share Tech Mono';
+    ctx.textAlign  = 'center';
+    ctx.fillText(lbl, crx + dx*(crr+9), cry + dy*(crr+9) + 3);
+  });
+
+  // ── Triangle legs ──
+  ctx.lineWidth = 2;
+  ctx.setLineDash([6, 4]);
+  ctx.strokeStyle = '#39ff14';
+  ctx.beginPath(); ctx.moveTo(OX, OY); ctx.lineTo(EX, OY); ctx.stroke(); // horizontal
+  ctx.strokeStyle = '#ff2d78';
+  ctx.beginPath(); ctx.moveTo(EX, OY); ctx.lineTo(EX, EY); ctx.stroke(); // vertical
+  ctx.setLineDash([]);
+
+  // Right-angle box
+  var bs = 9;
+  ctx.strokeStyle = '#3a3a6a'; ctx.lineWidth = 1.5;
+  ctx.strokeRect(
+    signX > 0 ? EX - bs : EX,
+    signY > 0 ? OY - bs : OY,
+    bs, bs
+  );
+
+  // ── Hypotenuse ──
+  ctx.strokeStyle = '#00cfff'; ctx.lineWidth = 3;
+  ctx.shadowColor = '#00cfff'; ctx.shadowBlur = 10;
+  ctx.beginPath(); ctx.moveTo(OX, OY); ctx.lineTo(EX, EY); ctx.stroke();
+  ctx.shadowBlur = 0;
+
+  var hypAngle  = Math.atan2(EY - OY, EX - OX);
+  var baseAngle = signX > 0 ? 0 : Math.PI;
+
+  // ── Angle arc (sweeps inside triangle) ──
+  // anticlockwise when signX === signY (NE/SW), clockwise when they differ (NW/SE)
+  var arcR = 30;
+  var ccw  = (signX === signY);
+  ctx.strokeStyle = '#ffe600'; ctx.lineWidth = 2.5;
+  ctx.beginPath();
+  ctx.arc(OX, OY, arcR, baseAngle, hypAngle, ccw);
+  ctx.stroke();
+  var arcMid = hypAngle + (baseAngle - hypAngle) * 0.5;
+  ctx.fillStyle = '#ffe600';
+  ctx.font = '11px Share Tech Mono';
+  ctx.textAlign = 'center';
+  ctx.fillText(m.angle + '\xb0',
+    OX + (arcR + 14) * Math.cos(arcMid),
+    OY + (arcR + 14) * Math.sin(arcMid) + 4);
+
+  // ── Side labels ──
+  var askVert  = m.ask === 'vert';
+  var askHoriz = m.ask === 'horiz';
+  ctx.font = 'bold 12px Share Tech Mono';
+
+  ctx.fillStyle = '#39ff14';
+  ctx.textAlign = 'center';
+  ctx.fillText(askHoriz ? '?' : 'cos\u03b8',
+    (OX + EX) / 2, signY > 0 ? OY + 20 : OY - 10);
+
+  ctx.fillStyle = '#ff2d78';
+  ctx.textAlign = signX > 0 ? 'left' : 'right';
+  ctx.fillText(askVert ? '?' : 'sin\u03b8',
+    signX > 0 ? EX + 28 : EX - 28,
+    (OY + EY) / 2 + 4);
+
+  // ── Hypotenuse label (always upper side) ──
+  ctx.fillStyle = '#00cfff';
+  ctx.textAlign = 'center';
+  ctx.save();
+  ctx.translate((OX + EX) / 2, (OY + EY) / 2);
+  var lblAngle = hypAngle;
+  if (lblAngle > Math.PI / 2 || lblAngle < -Math.PI / 2) lblAngle += Math.PI;
+  ctx.rotate(lblAngle);
+  ctx.fillText(String(m.hyp), 0, -13);
+  ctx.restore();
+
+  // ── Ship at START ──
+  ctx.save();
+  ctx.translate(OX, OY);
+  ctx.rotate(hypAngle);
+  if (signX < 0) ctx.scale(1, -1); // flip when sailing west
+  ctx.fillStyle = '#39ff14';
+  ctx.shadowColor = '#39ff14'; ctx.shadowBlur = 14;
+  ctx.beginPath();
+  ctx.moveTo(-9, 5); ctx.lineTo(9, 5); ctx.lineTo(6, 11); ctx.lineTo(-6, 11);
+  ctx.closePath(); ctx.fill();
+  ctx.strokeStyle = '#39ff14'; ctx.lineWidth = 2;
+  ctx.beginPath(); ctx.moveTo(0, 5); ctx.lineTo(0, -10); ctx.stroke();
+  ctx.fillStyle = 'rgba(57,255,20,0.55)';
+  ctx.beginPath(); ctx.moveTo(0, -8); ctx.lineTo(7, 1); ctx.lineTo(0, 3); ctx.closePath(); ctx.fill();
+  ctx.shadowBlur = 0;
+  ctx.restore();
+
+  ctx.fillStyle = '#39ff14';
+  ctx.font = 'bold 9px Share Tech Mono';
+  ctx.textAlign = 'center';
+  ctx.fillText('START', OX + (signX > 0 ? -8 : 8), OY + (signY > 0 ? 22 : -14));
+
+  // ── END marker ──
+  ctx.fillStyle = '#ffe600';
+  ctx.shadowColor = '#ffe600'; ctx.shadowBlur = 12;
+  ctx.beginPath(); ctx.arc(EX, EY, 6, 0, Math.PI * 2); ctx.fill();
+  ctx.shadowBlur = 0;
+  ctx.font = 'bold 9px Share Tech Mono';
+  ctx.textAlign = 'center';
+  ctx.fillText('END', EX, EY + (signY > 0 ? -14 : 18));
+
+  // ── Stats panel ──
+  var knownTrig = askVert ? 'cos' : 'sin';
+  document.getElementById('horizVal').textContent  = askHoriz ? '?' : ev(knownTrig, m.angle, m.hyp);
+  document.getElementById('vertVal').textContent   = askVert  ? '?' : ev(knownTrig, m.angle, m.hyp);
+  document.getElementById('directVal').textContent = m.hyp + ' units';
+  document.getElementById('bearingVal').textContent =
+    {NE:'Northeast',NW:'Northwest',SW:'Southwest',SE:'Southeast'}[m.quadrant] + ' ' + m.angle + '\xb0';
+}
+
+// ── UI ────────────────────────────────────────────────────────────────────────
+function buildChoices(m) {
+  var grid = document.getElementById('choicesGrid');
+  grid.innerHTML = '';
+  m.choices.forEach(function (c) {
+    var btn = document.createElement('button');
+    btn.className = 'choice-btn';
+    btn.textContent = c;
+    btn.addEventListener('click', function () { selectChoice(c, m, btn); });
+    grid.appendChild(btn);
+  });
+}
+
+function selectChoice(choice, m, btn) {
+  if (answered) return;
+  answered = true;
+  attempts++;
+  document.getElementById('attemptsVal').textContent = attempts;
+
+  document.querySelectorAll('.choice-btn').forEach(function (b) { b.disabled = true; });
+
+  var isCorrect = choice === m.answer;
+  btn.classList.add(isCorrect ? 'correct-choice' : 'wrong-choice');
+
+  if (isCorrect) {
+    correct++;
+    score += hintShown ? 50 : 100;
+    document.getElementById('correctVal').textContent = correct;
+    document.getElementById('scoreVal').textContent   = score;
+    document.getElementById('feedback').textContent   = '\u2713 CORRECT! ' + m.solution;
+    document.getElementById('feedback').className     = 'feedback correct';
+  } else {
+    document.querySelectorAll('.choice-btn').forEach(function (b) {
+      if (b.textContent === m.answer) b.classList.add('correct-choice');
+    });
+    document.getElementById('feedback').textContent = '\u2717 Not quite. ' + m.solution;
+    document.getElementById('feedback').className   = 'feedback wrong';
+  }
+  // Send score to parent hub
+  try { window.parent.postMessage({tool:'navigation-map', correct: correct, attempts: attempts, score: score}, '*'); } catch(e) {}
+}
+
+function loadMission(idx) {
+  var m = MISSIONS[idx];
+  hintShown = false;
+  answered  = false;
+  document.getElementById('hintBox').classList.remove('visible');
+  document.getElementById('hintBox').textContent   = '';
+  document.getElementById('feedback').textContent  = '';
+  document.getElementById('feedback').className    = 'feedback';
+  document.getElementById('missionLabel').textContent  = 'MISSION ' + String(m.id).padStart(2, '0');
+  document.getElementById('missionText').innerHTML     = m.text;
+  document.getElementById('missionNumVal').textContent = (idx + 1) + '/' + MISSIONS.length;
+  buildChoices(m);
+  drawMap(m);
+}
+
+function showHint() {
+  hintShown = true;
+  var hb = document.getElementById('hintBox');
+  hb.textContent = '\ud83d\udca1 ' + MISSIONS[currentMission].hint;
+  hb.classList.add('visible');
+}
+
+function nextMission() {
+  if (currentMission < MISSIONS.length - 1) {
+    loadMission(++currentMission);
+  } else {
+    document.getElementById('feedback').textContent =
+      '\ud83c\udf89 All done! Score: ' + score + '/' + (MISSIONS.length * 100);
+    document.getElementById('feedback').className = 'feedback correct';
+  }
+}
+
+window.addEventListener('resize', function () { drawMap(MISSIONS[currentMission]); });
+
+loadMission(0);
+
+// Listen for score requests from parent
+window.addEventListener('message', function(e) {
+  if (e.data === 'requestScore') {
+    try { window.parent.postMessage({tool:'navigation-map', correct: correct, attempts: attempts, score: score}, '*'); } catch(err) {}
+  }
+});
+</script>
+</body>
+</html>
+" style="width:100%;height:700px;border:none;display:block;"></iframe></div>
+</section>
+<section id="section-fill-in-the-blank" class="tool-section">
+  <div class="tool-topbar">
+    <div class="ttb-left">
+      <button class="back-btn-tool" onclick="goHome()">&#8592; Missions</button>
+      <span class="ttb-name">Fill-in-the-Blank</span>
+    </div>
+    <div class="ttb-right">
+      <span class="type-pill scored-pill">scored</span>
+      <span class="live-score" id="score-fill-in-the-blank"></span>
+      <button class="done-btn" onclick="markDone('fill-in-the-blank')">&#10003; Done &amp; Return</button>
+    </div>
+  </div>
+  <div id="fb-root" style="width:100%;"><iframe id="fb-iframe" srcdoc="<!DOCTYPE html>
+<html lang=&quot;en&quot;>
+<head>
+<meta charset=&quot;UTF-8&quot;>
+<meta name=&quot;viewport&quot; content=&quot;width=device-width, initial-scale=1.0&quot;>
+<title>Trig Fill-in-the-Blank</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=VT323&amp;family=Share+Tech+Mono&amp;display=swap');
+
+:root {
+  --bg:      #0a0a0f;
+  --surface: #0f0f1a;
+  --border:  #2a2a4a;
+  --ink:     #e8e8ff;
+  --muted:   #5a5a8a;
+  --green:   #39ff14;
+  --blue:    #00cfff;
+  --pink:    #ff2d78;
+  --yellow:  #ffe600;
+  --orange:  #ff6a00;
+  --grid:    rgba(0,207,255,0.05);
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: 'Share Tech Mono', monospace;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background-image:
+    linear-gradient(var(--grid) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+  background-size: 28px 28px;
+}
+
+body::after {
+  content: '';
+  position: fixed; inset: 0;
+  background: repeating-linear-gradient(
+    0deg, transparent, transparent 2px,
+    rgba(0,0,0,0.07) 2px, rgba(0,0,0,0.07) 4px
+  );
+  pointer-events: none; z-index: 100;
+}
+
+/* ── Header ── */
+header {
+  width: 100%; max-width: 680px;
+  padding: 28px 32px 16px;
+  border-bottom: 2px solid var(--border);
+  display: flex; justify-content: space-between; align-items: flex-end;
+}
+
+h1 {
+  font-family: 'VT323', monospace;
+  font-size: 2.2rem;
+  color: var(--green);
+  text-shadow: 0 0 12px var(--green), 0 0 30px rgba(57,255,20,0.25);
+  line-height: 1;
+}
+h1 span { color: var(--blue); text-shadow: 0 0 12px var(--blue); }
+
+.header-sub {
+  font-size: 0.6rem; color: var(--muted);
+  text-align: right; line-height: 1.9;
+}
+
+/* ── Main layout ── */
+.main {
+  width: 100%; max-width: 680px;
+  padding: 24px 32px;
+  display: flex; flex-direction: column; gap: 18px;
+}
+
+/* ── Tier progress bar ── */
+.tier-bar {
+  background: var(--surface);
+  border: 1.5px solid var(--border);
+  padding: 12px 16px;
+}
+
+.tier-header {
+  display: flex; justify-content: space-between; align-items: baseline;
+  margin-bottom: 10px;
+}
+
+.tier-label {
+  font-family: 'VT323', monospace;
+  font-size: 1.1rem;
+  letter-spacing: 0.1em;
+}
+
+.tier-sub { font-size: 0.6rem; color: var(--muted); }
+
+.tiers-row {
+  display: flex; gap: 6px; margin-bottom: 8px;
+}
+
+.tier-chip {
+  flex: 1; padding: 5px 4px;
+  border: 1.5px solid var(--border);
+  text-align: center;
+  font-size: 0.58rem; color: var(--muted);
+  letter-spacing: 0.05em;
+  transition: all 0.3s;
+}
+.tier-chip.active {
+  border-color: var(--yellow);
+  color: var(--yellow);
+  background: rgba(255,230,0,0.08);
+  text-shadow: 0 0 6px var(--yellow);
+}
+.tier-chip.unlocked {
+  border-color: var(--green);
+  color: var(--green);
+  background: rgba(57,255,20,0.06);
+}
+
+.progress-track {
+  height: 6px; background: var(--border); border-radius: 1px; overflow: hidden;
+}
+.progress-fill {
+  height: 100%; background: var(--yellow);
+  box-shadow: 0 0 8px var(--yellow);
+  transition: width 0.4s ease;
+  border-radius: 1px;
+}
+.progress-fill.t2 { background: var(--blue); box-shadow: 0 0 8px var(--blue); }
+.progress-fill.t3 { background: var(--green); box-shadow: 0 0 8px var(--green); }
+
+/* ── Score strip ── */
+.score-strip {
+  display: flex; gap: 8px;
+}
+.score-box {
+  flex: 1; background: var(--surface); border: 1.5px solid var(--border);
+  padding: 10px 8px; text-align: center;
+}
+.sc-label { font-size: 0.52rem; color: var(--muted); letter-spacing: 0.1em; margin-bottom: 3px; }
+.sc-val { font-family: 'VT323', monospace; font-size: 1.7rem; line-height: 1; }
+
+/* ── Question card ── */
+.question-card {
+  background: var(--surface);
+  border: 1.5px solid var(--border);
+  border-left: 4px solid var(--yellow);
+  padding: 28px 24px;
+  text-align: center;
+  position: relative;
+  min-height: 160px;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center; gap: 20px;
+}
+
+.q-tier-badge {
+  position: absolute; top: 10px; right: 12px;
+  font-size: 0.55rem; color: var(--muted);
+  letter-spacing: 0.1em;
+}
+
+.question-text {
+  font-family: 'VT323', monospace;
+  font-size: 3.2rem;
+  color: var(--yellow);
+  text-shadow: 0 0 14px rgba(255,230,0,0.4);
+  line-height: 1;
+  letter-spacing: 0.05em;
+}
+
+/* Answer row */
+.answer-row {
+  display: flex; gap: 10px; align-items: center;
+  width: 100%; justify-content: center;
+}
+
+.answer-input {
+  font-family: 'VT323', monospace;
+  font-size: 1.8rem;
+  width: 160px;
+  padding: 8px 14px;
+  background: var(--bg);
+  border: 2px solid var(--border);
+  color: var(--ink);
+  text-align: center;
+  outline: none;
+  border-radius: 2px;
+  transition: border-color 0.15s;
+}
+.answer-input:focus { border-color: var(--blue); }
+.answer-input.correct { border-color: var(--green); color: var(--green); }
+.answer-input.wrong   { border-color: var(--pink);  color: var(--pink);  }
+
+.submit-btn {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.7rem;
+  padding: 10px 18px;
+  border: 2px solid var(--blue);
+  background: transparent;
+  color: var(--blue);
+  cursor: pointer;
+  border-radius: 2px;
+  transition: all 0.15s;
+  white-space: nowrap;
+}
+.submit-btn:hover { background: rgba(0,207,255,0.1); }
+.submit-btn:disabled { opacity: 0.4; cursor: default; }
+
+.sqrt-btn {
+  font-family: 'VT323', monospace;
+  font-size: 1.6rem;
+  line-height: 1;
+  padding: 6px 12px;
+  border: 2px solid var(--yellow);
+  background: rgba(255,230,0,0.07);
+  color: var(--yellow);
+  cursor: pointer;
+  border-radius: 2px;
+  transition: all 0.15s;
+  flex-shrink: 0;
+}
+.sqrt-btn:hover { background: rgba(255,230,0,0.18); box-shadow: 0 0 8px rgba(255,230,0,0.3); }
+.sqrt-btn:active { transform: scale(0.93); }
+
+/* Feedback */
+.feedback-row {
+  display: flex; align-items: center; justify-content: space-between;
+  min-height: 28px;
+}
+
+.feedback {
+  font-family: 'VT323', monospace;
+  font-size: 1.4rem;
+  min-height: 1.6rem;
+}
+.feedback.correct { color: var(--green); text-shadow: 0 0 8px var(--green); }
+.feedback.wrong   { color: var(--pink);  text-shadow: 0 0 8px var(--pink);  }
+
+.next-btn {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.65rem;
+  padding: 7px 14px;
+  border: 1.5px solid var(--green);
+  background: transparent; color: var(--green);
+  cursor: pointer; border-radius: 2px;
+  transition: all 0.15s; opacity: 0;
+  pointer-events: none;
+}
+.next-btn.visible { opacity: 1; pointer-events: auto; }
+.next-btn:hover { background: rgba(57,255,20,0.1); }
+
+/* ── Hint / reference ── */
+.hint-row {
+  display: flex; justify-content: space-between; align-items: center;
+}
+
+.hint-btn {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.6rem;
+  padding: 6px 12px;
+  border: 1.5px solid var(--border);
+  background: transparent; color: var(--muted);
+  cursor: pointer; border-radius: 2px; transition: all 0.15s;
+}
+.hint-btn:hover { color: var(--yellow); border-color: var(--yellow); }
+
+.hint-text {
+  font-size: 0.65rem; color: var(--yellow);
+  background: rgba(255,230,0,0.05);
+  border: 1.5px solid rgba(255,230,0,0.25);
+  padding: 8px 12px;
+  display: none; margin-top: 8px;
+}
+.hint-text.visible { display: block; }
+
+/* ── Reference table ── */
+.ref-card {
+  background: var(--surface);
+  border: 1.5px solid var(--border);
+  border-left: 4px solid var(--blue);
+  padding: 14px 16px;
+}
+.ref-title {
+  font-size: 0.58rem; text-transform: uppercase;
+  letter-spacing: 0.15em; color: var(--blue);
+  margin-bottom: 10px;
+}
+.ref-grid {
+  display: grid;
+  grid-template-columns: 1.2fr repeat(5, 1fr);
+  gap: 0;
+  font-size: 0.62rem;
+}
+.ref-cell {
+  padding: 5px 4px;
+  border-bottom: 1px solid var(--border);
+  text-align: center;
+  color: var(--muted);
+}
+.ref-cell.header {
+  color: var(--blue); font-size: 0.6rem;
+  border-bottom: 2px solid var(--border);
+}
+.ref-cell.row-label { text-align: left; color: var(--ink); }
+.ref-cell.blurred { filter: blur(4px); user-select: none; transition: filter 0.3s; }
+.ref-card:hover .ref-cell.blurred { filter: blur(0); }
+
+/* ── Unlock flash overlay ── */
+.unlock-banner {
+  position: fixed; top: 0; left: 0; right: 0;
+  background: rgba(0,207,255,0.12);
+  border-bottom: 2px solid var(--blue);
+  padding: 14px;
+  text-align: center;
+  font-family: 'VT323', monospace;
+  font-size: 1.6rem;
+  color: var(--blue);
+  text-shadow: 0 0 12px var(--blue);
+  z-index: 500;
+  transform: translateY(-100%);
+  transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.unlock-banner.show { transform: translateY(0); }
+
+/* ── Streak indicator ── */
+.streak-display {
+  font-family: 'VT323', monospace;
+  font-size: 1rem; color: var(--orange);
+  text-shadow: 0 0 8px var(--orange);
+  min-height: 1.2rem;
+  text-align: right;
+}
+</style>
+</head>
+<body>
+
+<div class=&quot;unlock-banner&quot; id=&quot;unlockBanner&quot;>🔓 NEW TIER UNLOCKED!</div>
+
+<header>
+  <h1>Trig <span>Practice</span></h1>
+  <div class=&quot;header-sub&quot;>Type the exact value<br>Tiers unlock as you progress</div>
+</header>
+
+<div class=&quot;main&quot;>
+
+  <!-- Score strip -->
+  <div class=&quot;score-strip&quot;>
+    <div class=&quot;score-box&quot;>
+      <div class=&quot;sc-label&quot;>CORRECT</div>
+      <div class=&quot;sc-val&quot; id=&quot;correctVal&quot; style=&quot;color:var(--green)&quot;>0</div>
+    </div>
+    <div class=&quot;score-box&quot;>
+      <div class=&quot;sc-label&quot;>STREAK</div>
+      <div class=&quot;sc-val&quot; id=&quot;streakVal&quot; style=&quot;color:var(--orange)&quot;>0</div>
+    </div>
+    <div class=&quot;score-box&quot;>
+      <div class=&quot;sc-label&quot;>TOTAL</div>
+      <div class=&quot;sc-val&quot; id=&quot;totalVal&quot; style=&quot;color:var(--blue)&quot;>0</div>
+    </div>
+    <div class=&quot;score-box&quot;>
+      <div class=&quot;sc-label&quot;>ACCURACY</div>
+      <div class=&quot;sc-val&quot; id=&quot;accuracyVal&quot; style=&quot;color:var(--yellow)&quot;>—</div>
+    </div>
+  </div>
+
+  <!-- Tier progress -->
+  <div class=&quot;tier-bar&quot;>
+    <div class=&quot;tier-header&quot;>
+      <span class=&quot;tier-label&quot; id=&quot;tierLabel&quot; style=&quot;color:var(--yellow)&quot;>TIER 1</span>
+      <span class=&quot;tier-sub&quot; id=&quot;tierSub&quot;>sin &amp;amp; cos · degrees · 0°–90°</span>
+    </div>
+    <div class=&quot;tiers-row&quot;>
+      <div class=&quot;tier-chip active&quot; id=&quot;chip0&quot;>TIER 1<br><span style=&quot;font-size:0.56rem&quot;>sin/cos 0–90°</span></div>
+      <div class=&quot;tier-chip&quot; id=&quot;chip1&quot;>TIER 2<br><span style=&quot;font-size:0.56rem&quot;>+ tan &amp;amp; 0–360°</span></div>
+      <div class=&quot;tier-chip&quot; id=&quot;chip2&quot;>TIER 3<br><span style=&quot;font-size:0.56rem&quot;>radians</span></div>
+    </div>
+    <div class=&quot;progress-track&quot;>
+      <div class=&quot;progress-fill&quot; id=&quot;progressFill&quot; style=&quot;width:0%&quot;></div>
+    </div>
+    <div style=&quot;display:flex;justify-content:space-between;margin-top:5px;font-size:0.62rem;color:var(--muted)&quot;>
+      <span id=&quot;progressLabel&quot;>0 / 10 correct to unlock Tier 2</span>
+      <span id=&quot;progressPct&quot;>0%</span>
+    </div>
+  </div>
+
+  <!-- Question card -->
+  <div class=&quot;question-card&quot; id=&quot;questionCard&quot;>
+    <div class=&quot;q-tier-badge&quot; id=&quot;qTierBadge&quot;>T1</div>
+    <div class=&quot;question-text&quot; id=&quot;questionText&quot;>sin(30°) = ?</div>
+    <div class=&quot;answer-row&quot;>
+      <input class=&quot;answer-input&quot; id=&quot;answerInput&quot; type=&quot;text&quot;
+        placeholder=&quot;e.g. 1/2&quot; autocomplete=&quot;off&quot; spellcheck=&quot;false&quot;>
+      <button class=&quot;sqrt-btn&quot; onclick=&quot;insertSqrt()&quot; title=&quot;Insert √&quot;>√</button>
+      <button class=&quot;submit-btn&quot; id=&quot;submitBtn&quot; onclick=&quot;checkAnswer()&quot;>CHECK</button>
+    </div>
+    <div class=&quot;feedback-row&quot;>
+      <div class=&quot;feedback&quot; id=&quot;feedback&quot;></div>
+      <button class=&quot;next-btn&quot; id=&quot;nextBtn&quot; onclick=&quot;nextQuestion()&quot;>NEXT →</button>
+    </div>
+    <div style=&quot;width:100%&quot;>
+      <div class=&quot;hint-row&quot;>
+        <button class=&quot;hint-btn&quot; onclick=&quot;showHint()&quot;>HINT</button>
+        <span style=&quot;font-size:0.65rem;color:var(--muted)&quot; id=&quot;acceptedNote&quot;></span>
+      </div>
+      <div class=&quot;hint-text&quot; id=&quot;hintText&quot;></div>
+    </div>
+  </div>
+
+  <!-- Reference table (answers blurred until hover) -->
+  <div class=&quot;ref-card&quot;>
+    <div class=&quot;ref-title&quot;>Unit Circle Reference — hover to reveal</div>
+    <div class=&quot;ref-grid&quot; id=&quot;refGrid&quot;></div>
+  </div>
+
+</div>
+
+<script>
+// ── Question bank ─────────────────────────────────────────────────────────────
+// accepted: array of equivalent strings (all lowercase, trimmed)
+// hint: shown when student clicks HINT
+
+var TIERS = [
+  // Tier 1: sin &amp; cos, 0°–90°
+  {
+    label: 'TIER 1', sub: 'sin &amp;amp; cos · degrees · 0°–90°',
+    color: 'var(--yellow)', fillClass: '',
+    threshold: 10, // correct answers needed to unlock next
+    questions: [
+      { q:'sin(0°)',  a:'0',      accepted:['0'],           hint:'On the unit circle at 0°, the y-coordinate = 0' },
+      { q:'sin(30°)', a:'1/2',    accepted:['1/2','0.5'],   hint:'sin(30°) = opposite/hyp in a 30-60-90 triangle' },
+      { q:'sin(45°)', a:'√2/2',   accepted:['√2/2','√(2)/2','1/√2'], hint:'45-45-90 triangle: opp = adj, hyp = √2 · leg' },
+      { q:'sin(60°)', a:'√3/2',   accepted:['√3/2','√(3)/2'], hint:'sin(60°) = cos(30°). 30-60-90 triangle.' },
+      { q:'sin(90°)', a:'1',      accepted:['1'],           hint:'At 90°, the y-coordinate on the unit circle = 1' },
+      { q:'cos(0°)',  a:'1',      accepted:['1'],           hint:'At 0°, the x-coordinate on the unit circle = 1' },
+      { q:'cos(30°)', a:'√3/2',   accepted:['√3/2','√(3)/2'], hint:'cos(30°) = sin(60°). 30-60-90 triangle.' },
+      { q:'cos(45°)', a:'√2/2',   accepted:['√2/2','√(2)/2','1/√2'], hint:'cos(45°) = sin(45°) in a 45-45-90 triangle' },
+      { q:'cos(60°)', a:'1/2',    accepted:['1/2','0.5'],   hint:'cos(60°) = sin(30°). 30-60-90 triangle.' },
+      { q:'cos(90°)', a:'0',      accepted:['0'],           hint:'At 90°, the x-coordinate on the unit circle = 0' },
+    ]
+  },
+  // Tier 2: adds tan + all quadrants in degrees
+  {
+    label: 'TIER 2', sub: '+ tan · all quadrants · degrees',
+    color: 'var(--blue)', fillClass: 't2',
+    threshold: 15,
+    questions: [
+      { q:'tan(0°)',   a:'0',      accepted:['0'],              hint:'tan = sin/cos = 0/1' },
+      { q:'tan(30°)',  a:'1/√3',   accepted:['1/√3','√3/3'],    hint:'tan(30°) = sin(30°)/cos(30°) = (1/2)/(√3/2)' },
+      { q:'tan(45°)',  a:'1',      accepted:['1'],              hint:'tan(45°) = sin/cos = (√2/2)/(√2/2)' },
+      { q:'tan(60°)',  a:'√3',     accepted:['√3'],             hint:'tan(60°) = sin(60°)/cos(60°) = (√3/2)/(1/2)' },
+      { q:'tan(90°)',  a:'undefined', accepted:['undefined','undef','∞'], hint:'cos(90°) = 0, so tan = sin/0 = undefined' },
+      { q:'sin(120°)', a:'√3/2',   accepted:['√3/2'],           hint:'120° is in Q2. sin is positive. Reference angle = 60°' },
+      { q:'cos(120°)', a:'-1/2',   accepted:['-1/2','-0.5'],    hint:'120° is in Q2. cos is negative. Reference angle = 60°' },
+      { q:'sin(135°)', a:'√2/2',   accepted:['√2/2'],           hint:'135° is in Q2. sin positive. Reference angle = 45°' },
+      { q:'cos(135°)', a:'-√2/2',  accepted:['-√2/2'],          hint:'135° is in Q2. cos negative. Reference angle = 45°' },
+      { q:'sin(150°)', a:'1/2',    accepted:['1/2','0.5'],      hint:'150° in Q2. sin positive. Reference angle = 30°' },
+      { q:'cos(150°)', a:'-√3/2',  accepted:['-√3/2'],          hint:'150° in Q2. cos negative. Reference angle = 30°' },
+      { q:'sin(180°)', a:'0',      accepted:['0'],              hint:'At 180°, y-coordinate = 0 on the unit circle' },
+      { q:'cos(180°)', a:'-1',     accepted:['-1'],             hint:'At 180°, x-coordinate = -1 on the unit circle' },
+      { q:'sin(270°)', a:'-1',     accepted:['-1'],             hint:'At 270°, y-coordinate = -1 on the unit circle' },
+      { q:'cos(270°)', a:'0',      accepted:['0'],              hint:'At 270°, x-coordinate = 0 on the unit circle' },
+      { q:'tan(135°)', a:'-1',     accepted:['-1'],             hint:'Q2: sin positive, cos negative → tan negative' },
+      { q:'tan(150°)', a:'-1/√3',  accepted:['-1/√3','-√3/3'],  hint:'Q2: sin positive, cos negative. Reference = 30°' },
+      { q:'tan(180°)', a:'0',      accepted:['0'],              hint:'tan(180°) = sin(180°)/cos(180°) = 0/(-1)' },
+    ]
+  },
+  // Tier 3: radians
+  {
+    label: 'TIER 3', sub: 'radians · all quadrants',
+    color: 'var(--green)', fillClass: 't3',
+    threshold: null,
+    questions: [
+      { q:'sin(π/6)',    a:'1/2',    accepted:['1/2','0.5'],     hint:'π/6 = 30°' },
+      { q:'cos(π/6)',    a:'√3/2',   accepted:['√3/2'],          hint:'π/6 = 30°' },
+      { q:'tan(π/6)',    a:'1/√3',   accepted:['1/√3','√3/3'],   hint:'π/6 = 30°' },
+      { q:'sin(π/4)',    a:'√2/2',   accepted:['√2/2','1/√2'],   hint:'π/4 = 45°' },
+      { q:'cos(π/4)',    a:'√2/2',   accepted:['√2/2','1/√2'],   hint:'π/4 = 45°' },
+      { q:'tan(π/4)',    a:'1',      accepted:['1'],             hint:'π/4 = 45°' },
+      { q:'sin(π/3)',    a:'√3/2',   accepted:['√3/2'],          hint:'π/3 = 60°' },
+      { q:'cos(π/3)',    a:'1/2',    accepted:['1/2','0.5'],     hint:'π/3 = 60°' },
+      { q:'tan(π/3)',    a:'√3',     accepted:['√3'],            hint:'π/3 = 60°' },
+      { q:'sin(π/2)',    a:'1',      accepted:['1'],             hint:'π/2 = 90°' },
+      { q:'cos(π/2)',    a:'0',      accepted:['0'],             hint:'π/2 = 90°' },
+      { q:'sin(2π/3)',   a:'√3/2',   accepted:['√3/2'],          hint:'2π/3 = 120°. Q2, ref angle = π/3' },
+      { q:'cos(2π/3)',   a:'-1/2',   accepted:['-1/2'],          hint:'2π/3 = 120°. Q2, cos negative' },
+      { q:'sin(3π/4)',   a:'√2/2',   accepted:['√2/2'],          hint:'3π/4 = 135°. Q2, ref angle = π/4' },
+      { q:'cos(3π/4)',   a:'-√2/2',  accepted:['-√2/2'],         hint:'3π/4 = 135°. Q2, cos negative' },
+      { q:'sin(5π/6)',   a:'1/2',    accepted:['1/2'],           hint:'5π/6 = 150°. Q2, ref angle = π/6' },
+      { q:'cos(5π/6)',   a:'-√3/2',  accepted:['-√3/2'],         hint:'5π/6 = 150°. Q2, cos negative' },
+      { q:'sin(π)',      a:'0',      accepted:['0'],             hint:'π = 180°' },
+      { q:'cos(π)',      a:'-1',     accepted:['-1'],            hint:'π = 180°' },
+      { q:'sin(3π/2)',   a:'-1',     accepted:['-1'],            hint:'3π/2 = 270°' },
+      { q:'cos(3π/2)',   a:'0',      accepted:['0'],             hint:'3π/2 = 270°' },
+      { q:'tan(5π/4)',   a:'1',      accepted:['1'],             hint:'5π/4 = 225°. Q3: both sin/cos negative → tan positive' },
+      { q:'sin(7π/6)',   a:'-1/2',   accepted:['-1/2'],          hint:'7π/6 = 210°. Q3, ref angle = π/6' },
+      { q:'cos(7π/6)',   a:'-√3/2',  accepted:['-√3/2'],         hint:'7π/6 = 210°. Q3, cos negative' },
+    ]
+  }
+];
+
+// ── State ─────────────────────────────────────────────────────────────────────
+var correctTotal = 0;   // correct answers overall
+var totalAnswered = 0;
+var streak = 0;
+var currentTier = 0;
+var tierProgress = 0;   // correct within current tier (toward threshold)
+var currentQ = null;
+var answered = false;
+
+// Per-question weight for adaptive requeuing (higher = asked more)
+// Key = tier+index
+var weights = {};
+
+function initWeights() {
+  TIERS.forEach(function (tier, ti) {
+    tier.questions.forEach(function (q, qi) {
+      weights[ti + '_' + qi] = 1;
+    });
+  });
+}
+initWeights();
+
+// ── Reference table ───────────────────────────────────────────────────────────
+function buildRefTable() {
+  var grid = document.getElementById('refGrid');
+  var angles = ['0°','30°','45°','60°','90°'];
+  var headers = [''].concat(angles);
+  var rows = [
+    { label: 'sin', vals: ['0', '1/2', '√2/2', '√3/2', '1'] },
+    { label: 'cos', vals: ['1', '√3/2', '√2/2', '1/2', '0'] },
+    { label: 'tan', vals: ['0', '1/√3', '1', '√3', '—'] },
+  ];
+
+  headers.forEach(function (h) {
+    var cell = document.createElement('div');
+    cell.className = 'ref-cell header';
+    cell.textContent = h;
+    grid.appendChild(cell);
+  });
+
+  rows.forEach(function (row) {
+    var lbl = document.createElement('div');
+    lbl.className = 'ref-cell row-label';
+    lbl.textContent = row.label;
+    grid.appendChild(lbl);
+    row.vals.forEach(function (v) {
+      var cell = document.createElement('div');
+      cell.className = 'ref-cell blurred';
+      cell.textContent = v;
+      grid.appendChild(cell);
+    });
+  });
+}
+buildRefTable();
+
+// ── Pick next question (weighted) ─────────────────────────────────────────────
+function pickQuestion() {
+  // Available: questions from tier 0 up to currentTier
+  var pool = [];
+  for (var ti = 0; ti <= currentTier; ti++) {
+    TIERS[ti].questions.forEach(function (q, qi) {
+      var w = weights[ti + '_' + qi];
+      for (var i = 0; i < w; i++) pool.push({ ti: ti, qi: qi, q: q });
+    });
+  }
+  // Don't repeat the same question twice in a row
+  var filtered = pool.filter(function (item) {
+    return !currentQ || item.q.q !== currentQ.q.q;
+  });
+  if (!filtered.length) filtered = pool;
+  return filtered[Math.floor(Math.random() * filtered.length)];
+}
+
+function loadQuestion() {
+  var item = pickQuestion();
+  currentQ = item;
+  answered = false;
+
+  var tierColors = ['var(--yellow)', 'var(--blue)', 'var(--green)'];
+  document.getElementById('questionText').textContent = item.q.q + ' = ?';
+  document.getElementById('questionCard').style.borderLeftColor = tierColors[item.ti];
+  document.getElementById('qTierBadge').textContent = 'T' + (item.ti + 1);
+
+  var input = document.getElementById('answerInput');
+  input.value = '';
+  input.className = 'answer-input';
+  input.disabled = false;
+  input.focus();
+
+  document.getElementById('feedback').textContent = '';
+  document.getElementById('feedback').className = 'feedback';
+  document.getElementById('submitBtn').disabled = false;
+  document.getElementById('nextBtn').classList.remove('visible');
+  document.getElementById('hintText').classList.remove('visible');
+  document.getElementById('hintText').textContent = '';
+  document.getElementById('acceptedNote').textContent = '';
+}
+
+// ── Check answer ──────────────────────────────────────────────────────────────
+function normalize(s) {
+  return s.trim().toLowerCase()
+    .replace(/\s+/g, '')
+    .replace(/sqrt/g, '√')
+    .replace(/\^/g, '')
+    .replace(/×/g, '*');
+}
+
+function checkAnswer() {
+  if (answered) return;
+  var raw = document.getElementById('answerInput').value;
+  if (!raw.trim()) return;
+
+  answered = true;
+  totalAnswered++;
+  document.getElementById('submitBtn').disabled = true;
+  document.getElementById('answerInput').disabled = true;
+
+  var norm = normalize(raw);
+  var accepted = currentQ.q.accepted.map(normalize);
+  var isCorrect = accepted.indexOf(norm) >= 0;
+
+  var key = currentQ.ti + '_' + currentQ.qi;
+
+  if (isCorrect) {
+    correctTotal++;
+    streak++;
+    tierProgress++;
+    weights[key] = Math.max(1, weights[key] - 1); // reduce weight on correct
+    document.getElementById('answerInput').classList.add('correct');
+    document.getElementById('feedback').textContent = '✓ CORRECT!';
+    document.getElementById('feedback').className = 'feedback correct';
+    checkTierUnlock();
+  } else {
+    streak = 0;
+    weights[key] = Math.min(5, weights[key] + 2); // increase weight on wrong
+    document.getElementById('answerInput').classList.add('wrong');
+    document.getElementById('feedback').textContent = '✗  Answer: ' + currentQ.q.a;
+    document.getElementById('feedback').className = 'feedback wrong';
+    document.getElementById('acceptedNote').textContent =
+      'Accepted: ' + currentQ.q.accepted.join(', ');
+  }
+
+  updateHUD();
+  try { var acc2 = totalAnswered > 0 ? Math.round(correctTotal / totalAnswered * 100) : 0;
+    window.parent.postMessage({tool:'fill-in-the-blank', correct: correctTotal, total: totalAnswered, accuracy: acc2}, '*'); } catch(e) {}
+  document.getElementById('nextBtn').classList.add('visible');
+}
+
+// ── Tier unlock logic ─────────────────────────────────────────────────────────
+function checkTierUnlock() {
+  var tier = TIERS[currentTier];
+  if (tier.threshold &amp;&amp; tierProgress >= tier.threshold &amp;&amp; currentTier < TIERS.length - 1) {
+    currentTier++;
+    tierProgress = 0;
+    showUnlockBanner(TIERS[currentTier].label);
+    updateTierUI();
+  }
+}
+
+function showUnlockBanner(label) {
+  var banner = document.getElementById('unlockBanner');
+  banner.textContent = '🔓 ' + label + ' UNLOCKED!';
+  banner.classList.add('show');
+  setTimeout(function () { banner.classList.remove('show'); }, 2800);
+}
+
+// ── Update UI ─────────────────────────────────────────────────────────────────
+function updateHUD() {
+  document.getElementById('correctVal').textContent = correctTotal;
+  document.getElementById('streakVal').textContent  = streak;
+  document.getElementById('totalVal').textContent   = totalAnswered;
+  var acc = totalAnswered > 0 ? Math.round(correctTotal / totalAnswered * 100) : 0;
+  document.getElementById('accuracyVal').textContent = totalAnswered > 0 ? acc + '%' : '—';
+  updateTierUI();
+}
+
+function updateTierUI() {
+  var tier = TIERS[currentTier];
+  var thresh = tier.threshold || 1;
+  var pct = Math.min(100, Math.round(tierProgress / thresh * 100));
+
+  document.getElementById('tierLabel').textContent  = tier.label;
+  document.getElementById('tierLabel').style.color  = tier.color;
+  document.getElementById('tierSub').innerHTML      = tier.sub;
+
+  var fill = document.getElementById('progressFill');
+  fill.style.width = pct + '%';
+  fill.className = 'progress-fill' + (tier.fillClass ? ' ' + tier.fillClass : '');
+
+  var nextTier = TIERS[currentTier + 1];
+  if (nextTier) {
+    document.getElementById('progressLabel').textContent =
+      tierProgress + ' / ' + thresh + ' correct to unlock ' + nextTier.label;
+  } else {
+    document.getElementById('progressLabel').textContent = 'All tiers unlocked! 🎉';
+  }
+  document.getElementById('progressPct').textContent = pct + '%';
+
+  // Update chips
+  for (var i = 0; i < TIERS.length; i++) {
+    var chip = document.getElementById('chip' + i);
+    chip.className = 'tier-chip';
+    if (i < currentTier)      chip.classList.add('unlocked');
+    else if (i === currentTier) chip.classList.add('active');
+  }
+}
+
+// ── Hint ──────────────────────────────────────────────────────────────────────
+function showHint() {
+  var hb = document.getElementById('hintText');
+  hb.textContent = '💡 ' + currentQ.q.hint;
+  hb.classList.add('visible');
+}
+
+// ── Next ──────────────────────────────────────────────────────────────────────
+function nextQuestion() {
+  loadQuestion();
+}
+
+// ── Keyboard: Enter to submit / next ─────────────────────────────────────────
+document.getElementById('answerInput').addEventListener('keydown', function (e) {
+  if (e.key === 'Enter') {
+    if (!answered) checkAnswer();
+    else nextQuestion();
+  }
+});
+
+// ── √ button ──────────────────────────────────────────────────────────────────
+function insertSqrt() {
+  var input = document.getElementById('answerInput');
+  if (input.disabled) return;
+  var start = input.selectionStart;
+  var end   = input.selectionEnd;
+  var val   = input.value;
+  input.value = val.slice(0, start) + '√' + val.slice(end);
+  input.selectionStart = input.selectionEnd = start + 1;
+  input.focus();
+}
+
+// ── Init ──────────────────────────────────────────────────────────────────────
+updateTierUI();
+loadQuestion();
+
+window.addEventListener('message', function(e) {
+  if (e.data === 'requestScore') {
+    var acc2 = totalAnswered > 0 ? Math.round(correctTotal / totalAnswered * 100) : 0;
+    try { window.parent.postMessage({tool:'fill-in-the-blank', correct: correctTotal, total: totalAnswered, accuracy: acc2}, '*'); } catch(err) {}
+  }
+});
+</script>
+</body>
+</html>
+" style="width:100%;height:750px;border:none;display:block;"></iframe></div>
+</section>
+</div>
+
+<div id="screen-report">
+<div class="report-page">
+  <div class="report-topbar">
+    <div class="rpt-title"><small>Progress Report // The Unit Circle Protocol</small>MISSION LOG</div>
+    <button class="rpt-back" onclick="showHome()">&#8592; Back to Missions</button>
+  </div>
+  <div class="rpt-student" id="rptStudent"></div>
+  <div class="rpt-section-label">Performance Summary</div>
+  <div class="rpt-summary" id="rptSummary"></div>
+  <div class="rpt-section-label">Mission Details</div>
+  <table class="rpt-table">
+    <thead><tr><th>Mission</th><th>Type</th><th>Status</th><th>Score</th><th>Notes</th></tr></thead>
+    <tbody id="rptTbody"></tbody>
+  </table>
+  <div class="rpt-notes" id="rptNotes"></div>
+  <button class="print-btn" onclick="window.print()">&#8659; Print / Save PDF</button>
+</div>
+</div>
+
+<script>
+var TOOLS=[
+  {id:'unit-circle',       name:'Unit Circle Explorer',      desc:'Drag to explore sin, cos & tan live on the unit circle.',    type:'explorer'},
+  {id:'radian-visualizer', name:'Radian Visualizer',         desc:'See how radians map to degrees and arc length.',             type:'explorer'},
+  {id:'triangle-morphing', name:'Triangle Morphing',         desc:'Drag the slider between special right triangles.',          type:'explorer'},
+  {id:'whack-a-mole',      name:'Trig Whack-a-Mole',         desc:'Hit the correct trig value before it disappears.',          type:'scored'},
+  {id:'navigation-map',    name:'Trig Navigation',           desc:'Solve 8 navigation missions using sin & cos.',              type:'scored'},
+  {id:'fill-in-the-blank', name:'Fill-in-the-Blank',         desc:'Type exact trig values. Tiers unlock as you progress.',     type:'scored'},
+];
+var state={selectedId:null,doneMissions:{},studentData:{}};
+
+(function(){
+  var grid=document.getElementById('missionsGrid');
+  var dots=document.getElementById('selDots');
+  TOOLS.forEach(function(t,i){
+    var dot=document.createElement('div');dot.className='sel-dot';dot.id='dot-'+i;dots.appendChild(dot);
+    var card=document.createElement('div');card.className='m-card';card.id='mcard-'+t.id;
+    card.innerHTML='<div class="m-check">&#10003;</div>'+
+      '<div class="m-done-tag">DONE</div>'+
+      '<div class="m-num">MISSION '+String(i+1).padStart(2,'0')+'</div>'+
+      '<div class="m-name">'+t.name+'</div>'+
+      '<div class="m-desc">'+t.desc+'</div>'+
+      '<span class="m-badge '+(t.type==='scored'?'scored':'explorer')+'">'+(t.type==='scored'?'SCORED':'EXPLORER')+'</span>'+
+      '<button class="m-redo-btn" onclick="event.stopPropagation();redoMission(\''+t.id+'\')" >↺ REDO</button>';
+    card.addEventListener('click',function(){
+      if(card.classList.contains('done-card'))return;
+      if(!document.getElementById('fName').value.trim()){
+        var s=document.getElementById('launchStatus');s.textContent='Please enter your name first';s.className='launch-status warn';return;
+      }
+      document.querySelectorAll('.m-card').forEach(function(c){c.classList.remove('selected');});
+      card.classList.add('selected');state.selectedId=t.id;updateState();
+    });
+    grid.appendChild(card);
+  });
+})();
+
+function onInput(el){
+  el.classList.toggle('filled',el.value.trim().length>0);
+  var n=document.getElementById('fName').value.trim();
+  document.getElementById('nameDisplay').textContent=n?n.toUpperCase():'UNIDENTIFIED';
+}
+
+function updateState(){
+  var name=document.getElementById('fName').value.trim();
+  var sel=state.selectedId;
+  var done=Object.keys(state.doneMissions).length;
+  document.getElementById('launchBtn').disabled=!name||!sel;
+  document.getElementById('reportBtn').disabled=done<3;
+  TOOLS.forEach(function(t,i){document.getElementById('dot-'+i).classList.toggle('lit',!!state.doneMissions[t.id]);});
+  var cEl=document.getElementById('selCount');
+  cEl.textContent=done+' of 6 completed';cEl.className='sel-count'+(done>0?' has':'');
+  var stat=document.getElementById('launchStatus');
+  if(!name){stat.textContent='Enter your name to begin';stat.className='launch-status';}
+  else if(!sel){stat.textContent=done===0?'Click a mission card to select it':done+' done — select another'+(done>=3?' · Report ready!':'');stat.className='launch-status'+(done>=3?' warn':'');}
+  else{stat.textContent='✓ Ready — '+TOOLS.find(function(t){return t.id===sel;}).name;stat.className='launch-status ready';}
+  updateProgressStrip();
+}
+
+function updateProgressStrip(){
+  var done=Object.keys(state.doneMissions);
+  var strip=document.getElementById('progressStrip');
+  if(!done.length){strip.style.display='none';return;}
+  strip.style.display='block';
+  var items=document.getElementById('progItems');items.innerHTML='';
+  TOOLS.forEach(function(t){
+    if(!state.doneMissions[t.id])return;
+    var d=state.doneMissions[t.id];
+    var sc=t.id==='whack-a-mole'?(d.score||0)+' pts':t.id==='navigation-map'?(d.score||0)+'/800 pts':t.id==='fill-in-the-blank'?(d.correct||0)+'/'+(d.total||0)+' · '+(d.accuracy||0)+'%':'Explored';
+    var row=document.createElement('div');row.className='prog-item';
+    row.innerHTML='<div class="prog-dot complete"></div><span class="prog-name complete">'+t.name+'</span><span class="prog-score">'+sc+'</span>';
+    items.appendChild(row);
+  });
+}
+
+function doLaunch(){
+  if(!state.selectedId)return;
+  state.studentData={name:document.getElementById('fName').value.trim(),date:document.getElementById('fDate').value,cls:document.getElementById('fClass').value.trim(),teacher:document.getElementById('fTeacher').value.trim()};
+  var id=state.selectedId;
+  document.getElementById('screen-home').style.display='none';
+  document.getElementById('screen-tool').style.display='block';
+  document.querySelectorAll('.tool-section').forEach(function(s){s.classList.remove('active');});
+  document.getElementById('section-'+id).classList.add('active');
+  window.scrollTo({top:0});
+  // Trigger redraws for canvas tools after they become visible
+  setTimeout(function(){
+    try{ document.querySelectorAll('#section-'+id+' canvas').forEach(function(c){
+      var e=new Event('resize'); window.dispatchEvent(e);
+    }); }catch(e){}
+    // Tool-specific redraws
+    if(id==='unit-circle'&&window._ucDraw)window._ucDraw();
+    if(id==='radian-visualizer'&&window._rvDraw)window._rvDraw();
+    // triangle-morphing and whack-a-mole use self-contained iframes
+    if(id==='navigation-map'&&window._nmLoad)window._nmLoad();
+  },150);
+}
+
+function goHome(){
+  document.getElementById('screen-home').style.display='block';
+  document.getElementById('screen-tool').style.display='none';
+  document.getElementById('screen-report').style.display='none';
+  document.querySelectorAll('.m-card').forEach(function(c){c.classList.remove('selected');});
+  state.selectedId=null;updateState();window.scrollTo({top:0});
+}
+
+function markDone(id){
+  if(!state.doneMissions[id])state.doneMissions[id]={};
+  state.doneMissions[id].completed=true;
+  // Read scores directly from iframe DOM (same-origin data: URIs allow this)
+  var iframeEl=document.querySelector('#section-'+id+' iframe');
+  if(iframeEl){
+    try{
+      var doc=iframeEl.contentDocument||iframeEl.contentWindow.document;
+      var win=iframeEl.contentWindow;
+      if(id==='navigation-map'){
+        // Try JS variables first (most reliable), fall back to DOM
+        state.doneMissions[id].correct = (typeof win.correct==='number'?win.correct:0);
+        state.doneMissions[id].attempts= (typeof win.attempts==='number'?win.attempts:0);
+        state.doneMissions[id].score   = (typeof win.score==='number'?win.score:0);
+      } else if(id==='whack-a-mole'){
+        // `score` and `level` declared with `let` — not accessible as win.score.
+        // Scores are already stored in state via postMessage on endGame.
+        // Just keep what we have; don't overwrite with undefined.
+        if(typeof win.score==='number') state.doneMissions[id].score = win.score;
+        if(typeof win.level==='number') state.doneMissions[id].level = win.level;
+      } else if(id==='fill-in-the-blank'){
+        state.doneMissions[id].correct = (typeof win.correctTotal==='number'?win.correctTotal:0);
+        state.doneMissions[id].total   = (typeof win.totalAnswered==='number'?win.totalAnswered:0);
+        var acc=win.totalAnswered>0?Math.round(win.correctTotal/win.totalAnswered*100):0;
+        state.doneMissions[id].accuracy= acc;
+      }
+    }catch(e){console.log('markDone DOM read error:',e);}
+  }
+  var card=document.getElementById('mcard-'+id);
+  if(card){card.classList.remove('selected');card.classList.add('done-card');}
+  goHome();
+}
+
+function redoMission(id){
+  delete state.doneMissions[id];
+  var card=document.getElementById('mcard-'+id);
+  if(card){card.classList.remove('done-card');}
+  state.selectedId=id;
+  doLaunch();
+}
+
+function showReport(){
+  buildReport();
+  document.getElementById('screen-home').style.display='none';
+  document.getElementById('screen-tool').style.display='none';
+  document.getElementById('screen-report').style.display='block';
+  window.scrollTo({top:0});
+}
+function showHome(){
+  document.getElementById('screen-home').style.display='block';
+  document.getElementById('screen-tool').style.display='none';
+  document.getElementById('screen-report').style.display='none';
+  window.scrollTo({top:0});
+}
+
+function buildReport(){
+  var sd=state.studentData;
+  document.getElementById('rptStudent').innerHTML=
+    '<div class="rpt-field"><div class="rpt-field-label">Student</div><div class="rpt-field-val">'+sd.name+'</div></div>'+
+    '<div class="rpt-field"><div class="rpt-field-label">Date</div><div class="rpt-field-val">'+(sd.date?new Date(sd.date+'T12:00').toLocaleDateString('en-US',{year:'numeric',month:'long',day:'numeric'}):new Date().toLocaleDateString())+'</div></div>'+
+    '<div class="rpt-field"><div class="rpt-field-label">Class</div><div class="rpt-field-val">'+(sd.cls||'—')+'</div></div>'+
+    '<div class="rpt-field"><div class="rpt-field-label">Teacher</div><div class="rpt-field-val">'+(sd.teacher||'—')+'</div></div>';
+  var done=Object.keys(state.doneMissions).length,scored=0,totalAcc=0;
+  TOOLS.forEach(function(t){
+    var d=state.doneMissions[t.id];if(!d||t.type!=='scored')return;
+    var acc=0;
+    if(t.id==='navigation-map'&&d.attempts>0)acc=Math.round(d.correct/d.attempts*100);
+    else if(t.id==='fill-in-the-blank')acc=d.accuracy||0;
+    else if(t.id==='whack-a-mole')acc=Math.min(100,Math.round((d.score||0)/20));
+    scored++;totalAcc+=acc;
+  });
+  var avgAcc=scored>0?Math.round(totalAcc/scored):0;
+  document.getElementById('rptSummary').innerHTML=
+    '<div class="sum-box"><div class="sum-val" style="color:var(--blue)">'+done+'</div><div class="sum-lbl">Missions Done</div></div>'+
+    '<div class="sum-box"><div class="sum-val" style="color:var(--green)">'+(avgAcc?avgAcc+'%':'—')+'</div><div class="sum-lbl">Avg Accuracy</div></div>'+
+    '<div class="sum-box"><div class="sum-val" style="color:var(--yellow)">'+scored+'</div><div class="sum-lbl">Scored Exercises</div></div>';
+  var tbody=document.getElementById('rptTbody');tbody.innerHTML='';
+  TOOLS.forEach(function(t){
+    var d=state.doneMissions[t.id];
+    var dotC,stat,score,notes;
+    if(!d){dotC='sdot-d';stat='Not attempted';score='<span class="sna">—</span>';notes='';}
+    else if(t.type==='explorer'){dotC='sdot-g';stat='Completed';score='<span class="sna">Explorer</span>';notes='Visualization';}
+    else if(t.id==='whack-a-mole'){dotC='sdot-g';stat='Completed';score='<span class="sh">'+(d.score||0)+' pts</span>';notes='Lvl '+(d.level||1);}
+    else if(t.id==='navigation-map'){var a=d.attempts>0?Math.round(d.correct/d.attempts*100):0;dotC='sdot-g';stat='Completed';score='<span class="sh">'+(d.score||0)+'/800 pts</span>';notes=(d.correct||0)+'/'+(d.attempts||0)+' correct ('+a+'%)';}
+    else if(t.id==='fill-in-the-blank'){dotC='sdot-g';stat='Completed';score='<span class="sh">'+(d.correct||0)+'/'+(d.total||0)+'</span> · '+(d.accuracy||0)+'%';notes='Tier '+(d.tier||1)+'/3';}
+    else{dotC='sdot-y';stat='Completed';score='—';notes='';}
+    var tr=document.createElement('tr');
+    tr.innerHTML='<td><span class="sdot '+dotC+'"></span>'+t.name+'</td><td style="color:var(--muted)">'+(t.type==='scored'?'Scored':'Explorer')+'</td><td>'+stat+'</td><td>'+score+'</td><td style="color:var(--muted);font-size:11px">'+notes+'</td>';
+    tbody.appendChild(tr);
+  });
+  var obs=[];
+
+  // --- Overall accuracy observation ---
+  if(scored===0){
+    obs.push('No scored missions completed yet. Try Trig Whack-a-Mole, Trig Navigation, or Fill-in-the-Blank to receive accuracy feedback.');
+  } else if(avgAcc>=95){
+    obs.push('Exceptional accuracy of '+avgAcc+'% across scored missions. Mastery-level performance on exact trig values.');
+  } else if(avgAcc>=85){
+    obs.push('Strong accuracy of '+avgAcc+'%. A few edge-case angles are tripping you up — review 5π/6, 7π/4, and the quadrant III/IV exact values.');
+  } else if(avgAcc>=70){
+    obs.push('Solid foundation with '+avgAcc+'% accuracy. Focus on the second and third quadrant mirror angles — these are the most commonly missed.');
+  } else if(avgAcc>=50){
+    obs.push('Developing accuracy at '+avgAcc+'%. Spend time on the unit circle at 30°, 45°, 60° and their quadrant equivalents before re-attempting scored missions.');
+  } else {
+    obs.push('Accuracy of '+avgAcc+'% suggests the exact values need more reinforcement. Use the Unit Circle Explorer and Radian Visualizer to build intuition before retrying.');
+  }
+
+  // --- Per-mission specific observations ---
+  var wam=state.doneMissions['whack-a-mole'];
+  if(wam){
+    var wamScore=wam.score||0, wamLvl=wam.level||1;
+    if(wamScore>=18)obs.push('Trig Whack-a-Mole: Excellent reflexes and recall — '+wamScore+' pts at Level '+wamLvl+'. Trig values are becoming automatic.');
+    else if(wamScore>=10)obs.push('Trig Whack-a-Mole: Good performance ('+wamScore+' pts, Level '+wamLvl+'). Speed on negative-quadrant values can still improve.');
+    else obs.push('Trig Whack-a-Mole: '+wamScore+' pts at Level '+wamLvl+'. Slow down and verify sign (+ or −) before selecting — most errors are sign errors.');
+  }
+
+  var nav=state.doneMissions['navigation-map'];
+  if(nav){
+    var navAcc=nav.attempts>0?Math.round(nav.correct/nav.attempts*100):0;
+    if(navAcc===100)obs.push('Trig Navigation: Perfect score — all '+nav.correct+' waypoints solved correctly. Strong conceptual understanding of sin/cos as coordinates.');
+    else if(navAcc>=75)obs.push('Trig Navigation: '+nav.correct+' of '+nav.attempts+' waypoints correct ('+navAcc+'%). The missed waypoints were likely non-standard angles — review reference angle conversion.');
+    else obs.push('Trig Navigation: '+nav.correct+' of '+nav.attempts+' correct ('+navAcc+'%). Focus on which axis sin and cos land on — drawing the triangle on the unit circle sketch often helps.');
+  }
+
+  var fib=state.doneMissions['fill-in-the-blank'];
+  if(fib){
+    var fibTier=fib.tier||1, fibAcc=fib.accuracy||0;
+    if(fibTier>=3&&fibAcc>=85)obs.push('Fill-in-the-Blank: Reached Tier '+fibTier+' with '+fibAcc+'% accuracy — advanced performance on exact value recall under pressure.');
+    else if(fibTier>=2)obs.push('Fill-in-the-Blank: Reached Tier '+fibTier+' ('+fibAcc+'% accuracy). Tier 3 unlocks at higher accuracy — aim for consistent exact-fraction entry.');
+    else obs.push('Fill-in-the-Blank: Completed Tier 1 with '+fibAcc+'% accuracy. Practice entering answers as exact fractions (e.g. √3/2 not 0.866) to unlock higher tiers.');
+  }
+
+  // --- Explorer usage observations ---
+  var explorersDone=TOOLS.filter(function(t){return t.type==='explorer'&&state.doneMissions[t.id];}).length;
+  if(explorersDone===3){
+    obs.push('All three explorers completed. Connecting visual and algebraic representations is one of the strongest skills in trigonometry — this will pay off in future coursework.');
+  } else if(explorersDone===0&&done>0){
+    obs.push('No explorers visited yet. The Unit Circle Explorer and Radian Visualizer build the visual intuition that makes scored exercises much easier.');
+  }
+
+  // --- Completion arc ---
+  if(done===6){
+    obs.push('All 6 missions complete. Full protocol finished — excellent work.');
+  } else if(done>=4){
+    obs.push(done+' of 6 missions complete. Almost there — '+( 6-done)+' mission'+(6-done>1?'s':'')+' remaining.');
+  }
+
+  if(!obs.length)obs.push('Complete at least one mission to receive detailed observations.');
+
+  document.getElementById('rptNotes').innerHTML='<div class="rpt-notes-title">Observations</div><div class="rpt-notes-text">'+obs.map(function(o){return '• '+o;}).join('<br><br>')+'</div>';
+}
+
+function ucToggleSnap(){
+  var cb=document.getElementById('uc-snapToggle');
+  var btn=document.getElementById('uc-snapBtn');
+  if(!cb||!btn)return;
+  cb.checked=!cb.checked;
+  btn.textContent=cb.checked?'ON':'OFF';
+  btn.classList.toggle('off',!cb.checked);
+  cb.dispatchEvent(new Event('change'));
+}
+
+function tick(){var n=new Date(),p=function(x){return String(x).padStart(2,'0');};document.getElementById('hudClock').textContent=p(n.getHours())+':'+p(n.getMinutes())+':'+p(n.getSeconds());}
+setInterval(tick,1000);tick();
+(function(){var d=new Date(),p=function(x){return String(x).padStart(2,'0');};var el=document.getElementById('fDate');el.value=d.getFullYear()+'-'+p(d.getMonth()+1)+'-'+p(d.getDate());el.classList.add('filled');})();
+updateState();
+</script>
+<script>
+// ── Score receiver from iframed tools ────────────────────────────────────────
+window.addEventListener('message', function(e) {
+  var d = e.data;
+  if (!d || !d.tool) return;
+  if (!state.doneMissions[d.tool]) state.doneMissions[d.tool] = {completed: false};
+  var m = state.doneMissions[d.tool];
+  if (d.tool === 'whack-a-mole') {
+    m.score = d.score;
+    if (d.level) m.level = d.level;
+  } else if (d.tool === 'navigation-map') {
+    m.correct = d.correct;
+    m.attempts = d.attempts;
+    m.score = d.score;
+  } else if (d.tool === 'fill-in-the-blank') {
+    m.correct = d.correct;
+    m.total = d.total;
+    m.accuracy = d.accuracy;
+  }
+  // Update live score span in the topbar
+  var liveEl = document.getElementById('score-' + d.tool);
+  if (liveEl) {
+    if (d.tool === 'whack-a-mole') liveEl.textContent = (d.score||0) + ' pts';
+    else if (d.tool === 'navigation-map') liveEl.textContent = (d.score||0) + ' pts';
+    else if (d.tool === 'fill-in-the-blank') liveEl.textContent = (d.correct||0) + '/' + (d.total||0) + ' · ' + (d.accuracy||0) + '%';
+  }
+  // Refresh progress dots if visible
+  if (typeof buildProgress === 'function') buildProgress();
+});
+
+// --- unit-circle ---
+(function(){
+try {
+const canvas = document.getElementById('uc-c');
+const ctx = canvas.getContext('2d');
+const W = canvas.width, H = canvas.height;
+const CX = W/2, CY = H/2;
+const R = 180;
+
+let angle = 0;
+let dragging = false;
+const snapToggle = document.getElementById('uc-snapToggle');
+
+const SPECIAL_ANGLES = [
+  {deg: 0,   rad: '0',        label: '0'},
+  {deg: 30,  rad: 'π/6',      label: '30° = π/6  →  (√3/2, 1/2)'},
+  {deg: 45,  rad: 'π/4',      label: '45° = π/4  →  (√2/2, √2/2)'},
+  {deg: 60,  rad: 'π/3',      label: '60° = π/3  →  (1/2, √3/2)'},
+  {deg: 90,  rad: 'π/2',      label: '90° = π/2  →  (0, 1)'},
+  {deg: 120, rad: '2π/3',     label: '120° = 2π/3'},
+  {deg: 135, rad: '3π/4',     label: '135° = 3π/4'},
+  {deg: 150, rad: '5π/6',     label: '150° = 5π/6'},
+  {deg: 180, rad: 'π',        label: '180° = π  →  (-1, 0)'},
+  {deg: 210, rad: '7π/6',     label: '210° = 7π/6'},
+  {deg: 225, rad: '5π/4',     label: '225° = 5π/4'},
+  {deg: 240, rad: '4π/3',     label: '240° = 4π/3'},
+  {deg: 270, rad: '3π/2',     label: '270° = 3π/2  →  (0, -1)'},
+  {deg: 300, rad: '5π/3',     label: '300° = 5π/3'},
+  {deg: 315, rad: '7π/4',     label: '315° = 7π/4'},
+  {deg: 330, rad: '11π/6',    label: '330° = 11π/6'},
+  {deg: 360, rad: '2π',       label: '360° = 2π'},
+];
+
+const NICE = {
+  0: '0', 30: 'π/6', 45: 'π/4', 60: 'π/3', 90: 'π/2',
+  120: '2π/3', 135: '3π/4', 150: '5π/6', 180: 'π',
+  210: '7π/6', 225: '5π/4', 240: '4π/3', 270: '3π/2',
+  300: '5π/3', 315: '7π/4', 330: '11π/6', 360: '2π'
+};
+
+const EXACT = {
+  0:   {sin:'0',      cos:'1',      tan:'0'},
+  30:  {sin:'1/2',    cos:'√3/2',   tan:'1/√3'},
+  45:  {sin:'√2/2',   cos:'√2/2',   tan:'1'},
+  60:  {sin:'√3/2',   cos:'1/2',    tan:'√3'},
+  90:  {sin:'1',      cos:'0',      tan:'undef'},
+  120: {sin:'√3/2',   cos:'-1/2',   tan:'-√3'},
+  135: {sin:'√2/2',   cos:'-√2/2',  tan:'-1'},
+  150: {sin:'1/2',    cos:'-√3/2',  tan:'-1/√3'},
+  180: {sin:'0',      cos:'-1',     tan:'0'},
+  210: {sin:'-1/2',   cos:'-√3/2',  tan:'1/√3'},
+  225: {sin:'-√2/2',  cos:'-√2/2',  tan:'1'},
+  240: {sin:'-√3/2',  cos:'-1/2',   tan:'√3'},
+  270: {sin:'-1',     cos:'0',      tan:'undef'},
+  300: {sin:'-√3/2',  cos:'1/2',    tan:'-√3'},
+  315: {sin:'-√2/2',  cos:'√2/2',   tan:'-1'},
+  330: {sin:'-1/2',   cos:'√3/2',   tan:'-1/√3'},
+  360: {sin:'0',      cos:'1',      tan:'0'},
+};
+
+function snapAngle(deg) {
+  if (!snapToggle.checked) return deg;
+  let best = SPECIAL_ANGLES[0].deg, bestDist = 999;
+  for (const s of SPECIAL_ANGLES) {
+    const d = Math.abs(s.deg - deg);
+    if (d < bestDist) { bestDist = d; best = s.deg; }
+  }
+  return bestDist < 8 ? best : deg;
+}
+
+function fmt(n, d=4) {
+  if (Math.abs(n) < 1e-9) return '0';
+  if (Math.abs(Math.abs(n)-1) < 1e-9) return n > 0 ? '1' : '-1';
+  return n.toFixed(d).replace(/\.?0+$/, '');
+}
+
+function draw() {
+  ctx.clearRect(0, 0, W, H);
+
+  // Background grid
+  ctx.strokeStyle = '#1a1a28';
+  ctx.lineWidth = 1;
+  for (let i = -R; i <= R; i += 45) {
+    ctx.beginPath(); ctx.moveTo(CX+i, CY-R-20); ctx.lineTo(CX+i, CY+R+20); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(CX-R-20, CY+i); ctx.lineTo(CX+R+20, CY+i); ctx.stroke();
+  }
+
+  const rad = (angle * Math.PI) / 180;
+  const px = CX + R * Math.cos(rad);
+  const py = CY - R * Math.sin(rad);
+  const sinV = Math.sin(rad);
+  const cosV = Math.cos(rad);
+
+  // Axes
+  ctx.strokeStyle = '#3a3a5a';
+  ctx.lineWidth = 1.5;
+  ctx.beginPath(); ctx.moveTo(CX - R - 20, CY); ctx.lineTo(CX + R + 20, CY); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(CX, CY - R - 20); ctx.lineTo(CX, CY + R + 20); ctx.stroke();
+
+  // Axis labels
+  ctx.fillStyle = '#3a3a5a';
+  ctx.font = '11px Space Mono';
+  ctx.fillText('1', CX + R + 4, CY - 5);
+  ctx.fillText('-1', CX - R - 22, CY - 5);
+  ctx.fillText('1', CX + 5, CY - R - 6);
+  ctx.fillText('-1', CX + 5, CY + R + 14);
+
+  // Unit circle
+  ctx.strokeStyle = '#3a3a5a';
+  ctx.lineWidth = 1.5;
+  ctx.beginPath(); ctx.arc(CX, CY, R, 0, Math.PI*2); ctx.stroke();
+
+  // Special angle tick marks
+  for (const s of SPECIAL_ANGLES) {
+    const a = s.deg * Math.PI / 180;
+    const x1 = CX + (R-6)*Math.cos(a), y1 = CY - (R-6)*Math.sin(a);
+    const x2 = CX + (R+6)*Math.cos(a), y2 = CY - (R+6)*Math.sin(a);
+    ctx.strokeStyle = '#2a2a4a';
+    ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.moveTo(x1,y1); ctx.lineTo(x2,y2); ctx.stroke();
+  }
+
+  // Arc for angle
+  ctx.strokeStyle = 'rgba(167,139,250,0.4)';
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  ctx.arc(CX, CY, 30, 0, -rad, sinV < 0);
+  ctx.stroke();
+
+  // sin line (vertical, red)
+  ctx.strokeStyle = 'rgba(255,107,107,0.7)';
+  ctx.lineWidth = 2.5;
+  ctx.setLineDash([4,3]);
+  ctx.beginPath(); ctx.moveTo(px, py); ctx.lineTo(px, CY); ctx.stroke();
+  ctx.setLineDash([]);
+
+  // cos line (horizontal, teal)
+  ctx.strokeStyle = 'rgba(78,205,196,0.7)';
+  ctx.lineWidth = 2.5;
+  ctx.setLineDash([4,3]);
+  ctx.beginPath(); ctx.moveTo(CX, CY); ctx.lineTo(px, CY); ctx.stroke();
+  ctx.setLineDash([]);
+
+  // Radius line
+  ctx.strokeStyle = '#a78bfa';
+  ctx.lineWidth = 2.5;
+  ctx.beginPath(); ctx.moveTo(CX, CY); ctx.lineTo(px, py); ctx.stroke();
+
+  // sin label
+  if (Math.abs(sinV) > 0.05) {
+    ctx.fillStyle = 'rgba(255,107,107,0.9)';
+    ctx.font = 'bold 11px Space Mono';
+    ctx.fillText('sin', px + (cosV >= 0 ? 6 : -32), (py + CY)/2 + 4);
+  }
+
+  // cos label
+  if (Math.abs(cosV) > 0.05) {
+    ctx.fillStyle = 'rgba(78,205,196,0.9)';
+    ctx.font = 'bold 11px Space Mono';
+    ctx.fillText('cos', (px + CX)/2 - 10, CY + (sinV >= 0 ? 16 : -8));
+  }
+
+  // Point
+  ctx.fillStyle = '#a78bfa';
+  ctx.shadowColor = '#a78bfa';
+  ctx.shadowBlur = 16;
+  ctx.beginPath(); ctx.arc(px, py, 8, 0, Math.PI*2); ctx.fill();
+  ctx.shadowBlur = 0;
+
+  ctx.fillStyle = 'white';
+  ctx.beginPath(); ctx.arc(px, py, 4, 0, Math.PI*2); ctx.fill();
+
+  // Update UI
+  const snapDeg = Math.round(angle);
+  document.getElementById('uc-degVal').textContent = snapDeg + '°';
+
+  const radLabel = NICE[snapDeg] || (angle * Math.PI / 180).toFixed(3) + ' rad';
+  document.getElementById('uc-radVal').textContent = radLabel;
+
+  const exact = EXACT[snapDeg];
+  document.getElementById('uc-sinVal').textContent = exact ? exact.sin : fmt(sinV);
+  document.getElementById('uc-cosVal').textContent = exact ? exact.cos : fmt(cosV);
+
+  if (Math.abs(cosV) < 0.001) {
+    document.getElementById('uc-tanVal').textContent = 'undefined';
+  } else {
+    const tanV = sinV / cosV;
+    document.getElementById('uc-tanVal').textContent = exact ? exact.tan : fmt(tanV);
+  }
+
+  document.getElementById('uc-coordVal').textContent =
+    exact ? `(${exact.cos}, ${exact.sin})` : `(${fmt(cosV,3)}, ${fmt(sinV,3)})`;
+
+  // Quadrant
+  const q = cosV >= 0 && sinV >= 0 ? 'I' :
+            cosV < 0 && sinV >= 0 ? 'II' :
+            cosV < 0 && sinV < 0 ? 'III' : 'IV';
+
+  const qData = {
+    'I':   {sin:['+','pos'], cos:['+','pos'], tan:['+','pos']},
+    'II':  {sin:['+','pos'], cos:['−','neg'], tan:['−','neg']},
+    'III': {sin:['−','neg'], cos:['−','neg'], tan:['+','pos']},
+    'IV':  {sin:['−','neg'], cos:['+','pos'], tan:['−','neg']},
+  };
+
+  document.getElementById('uc-qNum').textContent = q;
+  const d = qData[q];
+  document.getElementById('uc-qSin').textContent = d.sin[0] === '+' ? 'positive' : 'negative';
+  document.getElementById('uc-qSin').className = 'q-' + d.sin[1];
+  document.getElementById('uc-qCos').textContent = d.cos[0] === '+' ? 'positive' : 'negative';
+  document.getElementById('uc-qCos').className = 'q-' + d.cos[1];
+  document.getElementById('uc-qTan').textContent = d.tan[0] === '+' ? 'positive' : 'negative';
+  document.getElementById('uc-qTan').className = 'q-' + d.tan[1];
+
+}
+
+function getAngleFromEvent(e) {
+  const rect = canvas.getBoundingClientRect();
+  const scaleX = W / rect.width, scaleY = H / rect.height;
+  const cx = (e.clientX - rect.left) * scaleX - CX;
+  const cy = -((e.clientY - rect.top) * scaleY - CY);
+  let deg = Math.atan2(cy, cx) * 180 / Math.PI;
+  if (deg < 0) deg += 360;
+  return snapAngle(deg);
+}
+
+canvas.addEventListener('mousedown', e => { dragging = true; angle = getAngleFromEvent(e); draw(); });
+canvas.addEventListener('mousemove', e => { if (dragging) { angle = getAngleFromEvent(e); draw(); } });
+canvas.addEventListener('mouseup', () => dragging = false);
+canvas.addEventListener('mouseleave', () => dragging = false);
+
+canvas.addEventListener('touchstart', e => { e.preventDefault(); dragging = true; angle = getAngleFromEvent(e.touches[0]); draw(); }, {passive:false});
+canvas.addEventListener('touchmove', e => { e.preventDefault(); if (dragging) { angle = getAngleFromEvent(e.touches[0]); draw(); } }, {passive:false});
+canvas.addEventListener('touchend', () => dragging = false);
+
+snapToggle.addEventListener('change', draw);
+
+window._ucDraw = draw;
+draw();
+} catch(e) { console.warn('UC init error:', e); }
+})();
+
+// --- radian-visualizer ---
+(function(){
+
+const canvas = document.getElementById('rv-c');
+const ctx = canvas.getContext('2d');
+const slider = document.getElementById('rv-angleSlider');
+
+const FACTS = {
+  0:          { rad:'0',      deg:'0°',      arc:'0',         fits:'0',     fact:'<strong>0 radians = 0°</strong>\nThe starting point. No arc, no angle.' },
+  [Math.PI/6]:{ rad:'π/6',   deg:'30°',     arc:'π/6 · r',   fits:'≈ 0.52',fact:'<strong>π/6 radians = 30°</strong>\nOne-twelfth of a full circle.\nsin(π/6) = 1/2' },
+  [Math.PI/4]:{ rad:'π/4',   deg:'45°',     arc:'π/4 · r',   fits:'≈ 0.79',fact:'<strong>π/4 radians = 45°</strong>\nOne-eighth of a full circle.\nsin(π/4) = √2/2' },
+  [Math.PI/3]:{ rad:'π/3',   deg:'60°',     arc:'π/3 · r',   fits:'≈ 1.05',fact:'<strong>π/3 radians = 60°</strong>\nOne-sixth of a full circle.\nsin(π/3) = √3/2' },
+  [Math.PI/2]:{ rad:'π/2',   deg:'90°',     arc:'π/2 · r',   fits:'≈ 1.57',fact:'<strong>π/2 radians = 90°</strong>\nExactly one quarter of a circle.\nThe first quadrant boundary.' },
+  [Math.PI]:  { rad:'π',     deg:'180°',    arc:'π · r',     fits:'≈ 3.14',fact:'<strong>π radians = 180°</strong>\nA straight line through the center.\nπ ≈ 3.14159…' },
+  [3*Math.PI/2]:{ rad:'3π/2',deg:'270°',    arc:'3π/2 · r',  fits:'≈ 4.71',fact:'<strong>3π/2 radians = 270°</strong>\nThree-quarters of a full circle.\nPoints straight down.' },
+  [2*Math.PI]:{ rad:'2π',    deg:'360°',    arc:'2π · r',    fits:'≈ 6.28',fact:'<strong>2π radians = 360°</strong>\nOne full revolution.\nCircumference = 2π · r' },
+};
+
+const SNAP_ANGLES = Object.keys(FACTS).map(Number).sort((a,b)=>a-b);
+
+function getNearestSnap(val) {
+  let best = null, bestD = Infinity;
+  for (const a of SNAP_ANGLES) {
+    const d = Math.abs(a - val);
+    if (d < bestD) { bestD = d; best = a; }
+  }
+  return bestD < 0.05 ? best : null;
+}
+
+function fmtRad(val) {
+  const snap = getNearestSnap(val);
+  if (snap !== null && FACTS[snap]) return FACTS[snap].rad;
+  const pi = val / Math.PI;
+  if (Math.abs(pi - Math.round(pi)) < 0.01) return `${Math.round(pi)}π`;
+  return val.toFixed(3);
+}
+
+function fmtDeg(val) {
+  return Math.round(val * 180 / Math.PI) + '°';
+}
+
+function draw(radians) {
+  const W = canvas.clientWidth || canvas.offsetWidth || 500;
+  if (canvas.width !== W) canvas.width = W;
+  const H = canvas.height;
+  ctx.clearRect(0, 0, W, H);
+
+  const CX = W / 2;
+  const CY = H / 2 + 10;
+  const R = Math.min(W, H) * 0.34;
+
+  // ── Background circle (full, dim) ──
+  ctx.strokeStyle = 'rgba(42,42,74,0.8)';
+  ctx.lineWidth = 1.5;
+  ctx.beginPath();
+  ctx.arc(CX, CY, R, 0, Math.PI * 2);
+  ctx.stroke();
+
+  // ── Axes ──
+  ctx.strokeStyle = '#2a2a4a';
+  ctx.lineWidth = 1;
+  ctx.beginPath(); ctx.moveTo(CX - R - 16, CY); ctx.lineTo(CX + R + 16, CY); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(CX, CY - R - 16); ctx.lineTo(CX, CY + R + 16); ctx.stroke();
+
+  // ── Arc (the angle sweep) ──
+  const sweepEnd = -radians; // canvas Y is inverted
+  ctx.strokeStyle = '#00cfff';
+  ctx.lineWidth = 4;
+  ctx.shadowColor = '#00cfff';
+  ctx.shadowBlur = 10;
+  ctx.beginPath();
+  ctx.arc(CX, CY, R, 0, sweepEnd, radians > 0 ? true : false);
+  ctx.stroke();
+  ctx.shadowBlur = 0;
+
+  // ── Filled sector (subtle) ──
+  if (radians > 0.01) {
+    ctx.beginPath();
+    ctx.moveTo(CX, CY);
+    ctx.arc(CX, CY, R, 0, sweepEnd, true);
+    ctx.closePath();
+    ctx.fillStyle = 'rgba(0,207,255,0.05)';
+    ctx.fill();
+  }
+
+  // ── Radius line to arc end point ──
+  const ex = CX + R * Math.cos(-radians);
+  const ey = CY + R * Math.sin(-radians);
+
+  ctx.strokeStyle = '#39ff14';
+  ctx.lineWidth = 2.5;
+  ctx.shadowColor = '#39ff14';
+  ctx.shadowBlur = 8;
+  ctx.beginPath();
+  ctx.moveTo(CX, CY);
+  ctx.lineTo(ex, ey);
+  ctx.stroke();
+  ctx.shadowBlur = 0;
+
+  // ── Baseline radius (along x-axis) ──
+  ctx.strokeStyle = 'rgba(57,255,20,0.35)';
+  ctx.lineWidth = 2;
+  ctx.setLineDash([6, 4]);
+  ctx.beginPath();
+  ctx.moveTo(CX, CY);
+  ctx.lineTo(CX + R, CY);
+  ctx.stroke();
+  ctx.setLineDash([]);
+
+  // ── Show radius "rulers" unrolling along the arc ──
+  // Draw tick marks every 1 radian along the arc
+  const numRadii = Math.min(Math.floor(radians), 6);
+  for (let i = 1; i <= numRadii; i++) {
+    const tickAngle = -i;
+    const tx = CX + R * Math.cos(tickAngle);
+    const ty = CY + R * Math.sin(tickAngle);
+    const norm = { x: Math.cos(tickAngle), y: Math.sin(tickAngle) };
+    // tick on the arc
+    ctx.strokeStyle = 'rgba(255,230,0,0.7)';
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.moveTo(tx - norm.y * 8, ty + norm.x * 8);
+    ctx.lineTo(tx + norm.y * 8, ty - norm.x * 8);
+    ctx.stroke();
+    // small label
+    ctx.fillStyle = 'rgba(255,230,0,0.8)';
+    ctx.font = '11px Share Tech Mono';
+    ctx.textAlign = 'center';
+    ctx.fillText(`${i}r`, tx + norm.x * 18, ty - norm.y * 18 + 4);
+  }
+
+  // ── Radius label ──
+  ctx.fillStyle = '#39ff14';
+  ctx.font = '13px Share Tech Mono';
+  ctx.textAlign = 'center';
+  ctx.fillText('r', CX + R / 2, CY - 10);
+
+  // ── Arc label ──
+  if (radians > 0.15) {
+    const midAngle = -radians / 2;
+    const lx = CX + (R + 26) * Math.cos(midAngle);
+    const ly = CY + (R + 26) * Math.sin(midAngle);
+    ctx.fillStyle = '#00cfff';
+    ctx.font = '12px Share Tech Mono';
+    ctx.textAlign = 'center';
+    ctx.fillText('arc', lx, ly);
+  }
+
+  // ── Angle label near center ──
+  if (radians > 0.05) {
+    const labelAngle = -radians / 2;
+    const lr = Math.min(R * 0.38, 55);
+    const lx2 = CX + lr * Math.cos(labelAngle);
+    const ly2 = CY + lr * Math.sin(labelAngle);
+    ctx.fillStyle = '#ffe600';
+    ctx.font = 'bold 13px Share Tech Mono';
+    ctx.textAlign = 'center';
+    ctx.fillText(fmtRad(radians), lx2, ly2 + 4);
+  }
+
+  // ── End point dot ──
+  ctx.fillStyle = '#00cfff';
+  ctx.shadowColor = '#00cfff';
+  ctx.shadowBlur = 12;
+  ctx.beginPath();
+  ctx.arc(ex, ey, 6, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.shadowBlur = 0;
+
+  // ── Origin dot ──
+  ctx.fillStyle = '#39ff14';
+  ctx.beginPath();
+  ctx.arc(CX, CY, 4, 0, Math.PI * 2);
+  ctx.fill();
+
+  // ── Start dot ──
+  ctx.fillStyle = 'rgba(57,255,20,0.5)';
+  ctx.beginPath();
+  ctx.arc(CX + R, CY, 4, 0, Math.PI * 2);
+  ctx.fill();
+
+  // ── Update UI ──
+  const snap = getNearestSnap(radians);
+  const f = snap !== null ? FACTS[snap] : null;
+
+  canvas.classList.toggle('snapped', snap !== null);
+
+  document.getElementById('rv-sliderVal').textContent = fmtRad(radians);
+  document.getElementById('rv-radVal').textContent = fmtRad(radians);
+  document.getElementById('rv-degVal').textContent = fmtDeg(radians);
+  document.getElementById('rv-arcVal').textContent = f ? f.arc : (radians.toFixed(3) + ' · r');
+  document.getElementById('rv-fitsVal').textContent = f ? f.fits : '≈ ' + radians.toFixed(2);
+
+  if (f) {
+    document.getElementById('rv-factBox').innerHTML = f.fact.replace(/\n/g, '<br>');
+  } else {
+    const d = Math.round(radians * 180 / Math.PI);
+    document.getElementById('rv-factBox').innerHTML =
+      `<strong>${radians.toFixed(3)} rad = ${d}°</strong><br>` +
+      `Arc length = ${radians.toFixed(3)} × r<br>` +
+      `${radians.toFixed(2)} radii fit along the arc`;
+  }
+
+  // Snap button highlight
+  document.querySelectorAll('.snap-btn').forEach(b => {
+    const v = eval(b.textContent.replace('π','Math.PI').replace(/([0-9])Math/g,'$1*Math'));
+    b.classList.toggle('active', snap !== null && Math.abs(snap - v) < 0.01);
+  });
+}
+
+function snapTo(val) {
+  slider.value = Math.round(val * 100);
+  draw(val);
+}
+
+slider.addEventListener('input', () => {
+  draw(parseFloat(slider.value) / 100);
+});
+
+let rvResizing = false;
+const ro = new ResizeObserver(() => {
+  if (rvResizing) return;
+  rvResizing = true;
+  draw(parseFloat(slider.value) / 100);
+  rvResizing = false;
+});
+ro.observe(canvas);
+
+draw(Math.PI);
+
+window.rvSnapTo = function(val) {
+  if (canvas.clientWidth > 0) canvas.width = canvas.clientWidth;
+  slider.value = Math.round(val * 100);
+  draw(val);
+};
+
+// Called by hub when this section becomes visible
+window._rvDraw = function() {
+  if (canvas.clientWidth > 0) canvas.width = canvas.clientWidth;
+  draw(parseFloat(slider.value) / 100);
+};
+
+})();
+
+// --- fill-in-the-blank ---
+</script>
+</body>
+</html>
